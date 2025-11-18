@@ -35,7 +35,7 @@ export function MainLayout({
         onSettings={onSettings}
       />
       <main className="pt-20 pb-12 min-h-screen">
-        <div className={`${activePage === 'documents' || activePage === 'dashboard' ? 'w-full px-16' : 'max-w-[1400px] mx-auto px-6'} py-6`}>
+        <div className={`${activePage === 'documents' || activePage === 'dashboard' ? 'w-full px-6' : 'max-w-[1400px] mx-auto px-6'} py-6`}>
           {children}
         </div>
       </main>

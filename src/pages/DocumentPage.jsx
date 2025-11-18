@@ -27,7 +27,7 @@ export function DocumentPage({ onUpload }) {
       <div className="flex h-[calc(100%-70px)]">
         {/* Left Panel - Invoice List (65%) */}
         <div className="w-[65%] border-r border-gray-300 dark:border-gray-700 bg-white dark:bg-dark overflow-auto">
-          <div className="px-16 py-6">
+          <div className="px-6 py-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-[#2a363b] dark:text-white">Invoice List</h2>
             <div className="flex space-x-2">
