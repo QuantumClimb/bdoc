@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [".css", ".scss", ".gif", ".jpg", "*.jpeg", ".js", ".png", ".txt", ".webp", ".woff", ".ttf", ".svg", ".ico", ".woff2"]
+  },
+  "mimeTypes": {
+    ".json": "text/json",
+    ".weba": "audio/webp",
+    ".webp": "image/webp",
+    ".webm": "video/webm",
+    ".web": "application/x-web-app-manifest+json"
+  }
+}

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Processing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#FCD34D',
+              dark: '#1F2937',
+              darker: '#111827'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      ::-webkit-scrollbar { display: none; }
+      
+      .processing-container {
+        background: linear-gradient(135deg, #111827 0%, #1F2937 50%, #374151 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .processing-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+          radial-gradient(circle at 30% 30%, rgba(252, 211, 77, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 70% 70%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+          radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
+        animation: backgroundFlow 8s ease-in-out infinite;
+      }
+      
+      @keyframes backgroundFlow {
+        0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.3; }
+        33% { transform: rotate(120deg) scale(1.1); opacity: 0.6; }
+        66% { transform: rotate(240deg) scale(0.9); opacity: 0.4; }
+      }
+      
+      .tech-grid {
+        position: absolute;
+        inset: 0;
+        background-image: 
+          linear-gradient(rgba(252, 211, 77, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(252, 211, 77, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: gridPulse 4s ease-in-out infinite;
+      }
+      
+      @keyframes gridPulse {
+        0%, 100% { opacity: 0.1; }
+        50% { opacity: 0.3; }
+      }
+      
+      .document-preview {
+        background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 2px solid rgba(252, 211, 77, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        animation: documentFloat 3s ease-in-out infinite;
+      }
+      
+      @keyframes documentFloat {
+        0%, 100% { transform: translateY(0) rotateY(0deg); }
+        50% { transform: translateY(-10px) rotateY(5deg); }
+      }
+      
+      .scan-line {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #FCD34D, transparent);
+        animation: scanDocument 2.5s ease-in-out infinite;
+      }
+      
+      @keyframes scanDocument {
+        0% { top: 0%; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { top: 100%; opacity: 0; }
+      }
+      
+      .processing-text {
+        animation: textGlow 2s ease-in-out infinite;
+      }
+      
+      @keyframes textGlow {
+        0%, 100% { 
+          text-shadow: 0 0 10px rgba(252, 211, 77, 0.3);
+          transform: scale(1);
+        }
+        50% { 
+          text-shadow: 0 0 20px rgba(252, 211, 77, 0.6);
+          transform: scale(1.02);
+        }
+      }
+      
+      .neural-network {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      
+      .node {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #FCD34D;
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(252, 211, 77, 0.8);
+        animation: nodePulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes nodePulse {
+        0%, 100% { transform: scale(1); opacity: 0.6; }
+        50% { transform: scale(1.5); opacity: 1; }
+      }
+      
+      .connection-line {
+        position: absolute;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #FCD34D, transparent);
+        animation: dataFlow 1.5s linear infinite;
+      }
+      
+      @keyframes dataFlow {
+        0% { opacity: 0; transform: scaleX(0); }
+        50% { opacity: 1; transform: scaleX(1); }
+        100% { opacity: 0; transform: scaleX(0); }
+      }
+      
+      .progress-ring {
+        animation: ringRotate 3s linear infinite;
+      }
+      
+      @keyframes ringRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      .ai-brain {
+        animation: brainThink 2s ease-in-out infinite;
+      }
+      
+      @keyframes brainThink {
+        0%, 100% { 
+          filter: drop-shadow(0 0 10px rgba(252, 211, 77, 0.5));
+          transform: scale(1);
+        }
+        50% { 
+          filter: drop-shadow(0 0 20px rgba(252, 211, 77, 0.8));
+          transform: scale(1.1);
+        }
+      }
+      
+      .status-indicator {
+        animation: statusBlink 1s ease-in-out infinite;
+      }
+      
+      @keyframes statusBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      .data-stream {
+        position: absolute;
+        width: 2px;
+        height: 20px;
+        background: linear-gradient(to bottom, #FCD34D, transparent);
+        animation: streamFlow 1s linear infinite;
+      }
+      
+      @keyframes streamFlow {
+        0% { transform: translateY(-100px); opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { transform: translateY(100px); opacity: 0; }
+      }
+      
+      .hologram-effect {
+        position: relative;
+      }
+      
+      .hologram-effect::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(252, 211, 77, 0.1) 50%, transparent 70%);
+        animation: hologramSweep 3s linear infinite;
+      }
+      
+      @keyframes hologramSweep {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      
+      .processing-step {
+        opacity: 0;
+        animation: stepFadeIn 0.8s ease-out forwards;
+      }
+      
+      @keyframes stepFadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      
+      .completion-effect {
+        animation: completionPulse 0.6s ease-out;
+      }
+      
+      @keyframes completionPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+    </style>
+</head>
+<body class="overflow-hidden">
+    <div id="processing-screen" class="processing-container fixed inset-0 flex items-center justify-center z-50">
+        <div class="tech-grid"></div>
+        
+        <div class="neural-network">
+            <div class="node" style="top: 20%; left: 15%; animation-delay: 0s;"></div>
+            <div class="node" style="top: 30%; left: 85%; animation-delay: 0.5s;"></div>
+            <div class="node" style="top: 60%; left: 10%; animation-delay: 1s;"></div>
+            <div class="node" style="top: 70%; left: 90%; animation-delay: 1.5s;"></div>
+            <div class="node" style="top: 45%; left: 50%; animation-delay: 0.8s;"></div>
+            
+            <div class="connection-line" style="top: 25%; left: 20%; width: 200px; animation-delay: 0.2s;"></div>
+            <div class="connection-line" style="top: 65%; left: 15%; width: 300px; animation-delay: 0.7s;"></div>
+            <div class="connection-line" style="top: 50%; left: 55%; width: 250px; animation-delay: 1.2s;"></div>
+            
+            <div class="data-stream" style="left: 25%; animation-delay: 0s;"></div>
+            <div class="data-stream" style="left: 75%; animation-delay: 0.3s;"></div>
+            <div class="data-stream" style="left: 50%; animation-delay: 0.6s;"></div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <div class="text-center lg:text-left">
+                        <div class="flex items-center justify-center lg:justify-start space-x-4 mb-6">
+                            <div class="ai-brain w-16 h-16 bg-gradient-to-br from-primary to-yellow-500 rounded-2xl flex items-center justify-center">
+                                <i class="bi bi-cpu text-darker text-2xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="processing-text text-4xl font-bold text-white">AI Processing</h1>
+                                <p class="text-primary text-sm font-medium">Powered by Advanced LLM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div id="current-status" class="text-xl text-gray-300 font-medium">Initializing OCR Engine...</div>
+                            <div class="text-gray-500 text-sm">Please wait while we process your document</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-darker/80 backdrop-blur rounded-2xl border border-gray-700/50 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-white">Processing Steps</h3>
+                                <div class="status-indicator w-3 h-3 bg-green-400 rounded-full"></div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div id="step-1" class="processing-step flex items-center space-x-3" style="animation-delay: 1s;">
+                                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                                        <i class="bi bi-check text-white text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Document Upload</div>
+                                        <div class="text-gray-400 text-xs">File received and validated</div>
+                                    </div>
+                                </div>
+                                
+                                <div id="step-2" class="processing-step flex items-center space-x-3" style="animation-delay: 2s;">
+                                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                        <div class="progress-ring w-4 h-4 border-2 border-darker border-t-transparent rounded-full"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">OCR Scanning</div>
+                                        <div class="text-gray-400 text-xs">Extracting text and layout</div>
+                                    </div>
+                                </div>
+                                
+                                <div id="step-3" class="processing-step flex items-center space-x-3" style="animation-delay: 3s;">
+                                    <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                                        <i class="bi bi-three-dots text-white text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 font-medium">AI Analysis</div>
+                                        <div class="text-gray-500 text-xs">Understanding content structure</div>
+                                    </div>
+                                </div>
+                                
+                                <div id="step-4" class="processing-step flex items-center space-x-3" style="animation-delay: 4s;">
+                                    <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                                        <i class="bi bi-three-dots text-white text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 font-medium">Data Extraction</div>
+                                        <div class="text-gray-500 text-xs">Digitizing information</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-darker/80 backdrop-blur rounded-2xl border border-gray-700/50 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-white font-medium">Overall Progress</span>
+                                <span id="progress-percent" class="text-primary font-bold">25%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                                <div id="progress-bar" class="bg-gradient-to-r from-primary to-yellow-400 h-full rounded-full transition-all duration-500" style="width: 25%">
+                                    <div class="w-full h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <div class="document-preview w-80 h-96 rounded-2xl p-8 relative overflow-hidden hologram-effect">
+                            <div class="scan-line"></div>
+                            
+                            <div class="space-y-3">
+                                <div class="h-4 bg-gray-400 rounded w-3/4"></div>
+                                <div class="h-4 bg-gray-300 rounded w-full"></div>
+                                <div class="h-4 bg-gray-400 rounded w-5/6"></div>
+                                <div class="h-8 bg-gray-200 rounded w-full mt-6"></div>
+                                <div class="h-3 bg-gray-400 rounded w-2/3"></div>
+                                <div class="h-3 bg-gray-300 rounded w-full"></div>
+                                <div class="h-3 bg-gray-400 rounded w-4/5"></div>
+                                <div class="h-3 bg-gray-300 rounded w-3/4"></div>
+                                <div class="h-6 bg-gray-200 rounded w-full mt-6"></div>
+                                <div class="h-3 bg-gray-400 rounded w-5/6"></div>
+                                <div class="h-3 bg-gray-300 rounded w-full"></div>
+                                <div class="h-3 bg-gray-400 rounded w-2/3"></div>
+                            </div>
+                            
+                            <div class="absolute bottom-4 right-4 flex space-x-2">
+                                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <div class="w-2 h-2 bg-primary rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                                <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="absolute -top-4 -right-4 w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center border-2 border-primary">
+                            <i class="bi bi-eye text-primary text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const statusMessages = [
+            "Initializing OCR Engine...",
+            "Scanning document structure...",
+            "Analyzing text patterns...",
+            "Processing with AI model...",
+            "Extracting data fields...",
+            "Validating information...",
+            "Finalizing digitization..."
+        ];
+        
+        let currentStep = 0;
+        let progress = 25;
+        
+        function updateProgress() {
+            const statusEl = document.getElementById('current-status');
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercent = document.getElementById('progress-percent');
+            
+            if (currentStep < statusMessages.length) {
+                statusEl.textContent = statusMessages[currentStep];
+                progress = Math.min(100, 25 + (currentStep * 12));
+                
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = progress + '%';
+                
+                // Update processing steps
+                if (currentStep >= 1) {
+                    const step2 = document.getElementById('step-2');
+                    step2.querySelector('.progress-ring').parentElement.innerHTML = '<i class="bi bi-check text-white text-sm"></i>';
+                    step2.querySelector('.progress-ring').parentElement.className = 'w-8 h-8 bg-green-600 rounded-full flex items-center justify-center completion-effect';
+                    step2.querySelector('.text-white').className = 'text-white font-medium';
+                }
+                
+                if (currentStep >= 3) {
+                    const step3 = document.getElementById('step-3');
+                    step3.querySelector('.bg-gray-600').className = 'w-8 h-8 bg-primary rounded-full flex items-center justify-center';
+                    step3.querySelector('.bg-gray-600').innerHTML = '<div class="progress-ring w-4 h-4 border-2 border-darker border-t-transparent rounded-full"></div>';
+                    step3.querySelector('.text-gray-400').className = 'text-white font-medium';
+                    step3.querySelector('.text-gray-500').className = 'text-gray-400 text-xs';
+                }
+                
+                if (currentStep >= 5) {
+                    const step4 = document.getElementById('step-4');
+                    step4.querySelector('.bg-gray-600').className = 'w-8 h-8 bg-primary rounded-full flex items-center justify-center';
+                    step4.querySelector('.bg-gray-600').innerHTML = '<div class="progress-ring w-4 h-4 border-2 border-darker border-t-transparent rounded-full"></div>';
+                    step4.querySelector('.text-gray-400').className = 'text-white font-medium';
+                    step4.querySelector('.text-gray-500').className = 'text-gray-400 text-xs';
+                }
+                
+                currentStep++;
+                setTimeout(updateProgress, 1200);
+            } else {
+                statusEl.textContent = "Processing complete!";
+                progressBar.style.width = '100%';
+                progressPercent.textContent = '100%';
+                
+                // Complete all steps
+                const step3 = document.getElementById('step-3');
+                const step4 = document.getElementById('step-4');
+                
+                step3.querySelector('.w-8').innerHTML = '<i class="bi bi-check text-white text-sm"></i>';
+                step3.querySelector('.w-8').className = 'w-8 h-8 bg-green-600 rounded-full flex items-center justify-center completion-effect';
+                
+                step4.querySelector('.w-8').innerHTML = '<i class="bi bi-check text-white text-sm"></i>';
+                step4.querySelector('.w-8').className = 'w-8 h-8 bg-green-600 rounded-full flex items-center justify-center completion-effect';
+                
+                setTimeout(() => {
+                    document.getElementById('processing-screen').style.animation = 'fadeOut 1s ease-in-out forwards';
+                }, 2000);
+            }
+        }
+        
+        setTimeout(updateProgress, 1000);
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+{
+  "invoices": [
+    {
+      "id": 1,
+      "invoiceNumber": "INV-2024-001",
+      "date": "2024-01-15",
+      "supplier": "Acme Corporation",
+      "amount": "15420.00",
+      "status": "Approved",
+      "poNumber": "PO-2024-001",
+      "fileName": "invoice_001.pdf"
+    },
+    {
+      "id": 2,
+      "invoiceNumber": "INV-2024-002",
+      "date": "2024-01-16",
+      "supplier": "Global Tech Solutions",
+      "amount": "8750.50",
+      "status": "Pending",
+      "poNumber": "PO-2024-002",
+      "fileName": "invoice_002.pdf"
+    },
+    {
+      "id": 3,
+      "invoiceNumber": "INV-2024-003",
+      "date": "2024-01-17",
+      "supplier": "Enterprise Services Inc",
+      "amount": "22340.75",
+      "status": "Approved",
+      "poNumber": "PO-2024-003",
+      "fileName": "invoice_003.pdf"
+    },
+    {
+      "id": 4,
+      "invoiceNumber": "INV-2024-004",
+      "date": "2024-01-18",
+      "supplier": "Summit Supply Chain",
+      "amount": "5890.25",
+      "status": "Rejected",
+      "poNumber": "PO-2024-004",
+      "fileName": "invoice_004.pdf"
+    },
+    {
+      "id": 5,
+      "invoiceNumber": "INV-2024-005",
+      "date": "2024-01-19",
+      "supplier": "Pacific Logistics",
+      "amount": "18920.00",
+      "status": "Pending",
+      "poNumber": "PO-2024-005",
+      "fileName": "invoice_005.pdf"
+    },
+    {
+      "id": 6,
+      "invoiceNumber": "INV-2024-006",
+      "date": "2024-01-20",
+      "supplier": "Metro Industries",
+      "amount": "12450.75",
+      "status": "Approved",
+      "poNumber": "PO-2024-006",
+      "fileName": "invoice_006.pdf"
+    },
+    {
+      "id": 7,
+      "invoiceNumber": "INV-2024-007",
+      "date": "2024-01-21",
+      "supplier": "National Trading Co",
+      "amount": "9675.25",
+      "status": "Approved",
+      "poNumber": "PO-2024-007",
+      "fileName": "invoice_007.pdf"
+    },
+    {
+      "id": 8,
+      "invoiceNumber": "INV-2024-008",
+      "date": "2024-01-22",
+      "supplier": "Coastal Manufacturing",
+      "amount": "14280.50",
+      "status": "Pending",
+      "poNumber": "PO-2024-008",
+      "fileName": "invoice_008.pdf"
+    },
+    {
+      "id": 9,
+      "invoiceNumber": "INV-2024-009",
+      "date": "2024-01-23",
+      "supplier": "Highland Distributors",
+      "amount": "7340.00",
+      "status": "Approved",
+      "poNumber": "PO-2024-009",
+      "fileName": "invoice_009.pdf"
+    },
+    {
+      "id": 10,
+      "invoiceNumber": "INV-2024-010",
+      "date": "2024-01-24",
+      "supplier": "Central Suppliers Ltd",
+      "amount": "19560.25",
+      "status": "Rejected",
+      "poNumber": "PO-2024-010",
+      "fileName": "invoice_010.pdf"
+    },
+    {
+      "id": 11,
+      "invoiceNumber": "INV-2024-011",
+      "date": "2024-01-25",
+      "supplier": "Eastern Wholesale",
+      "amount": "11890.75",
+      "status": "Pending",
+      "poNumber": "PO-2024-011",
+      "fileName": "invoice_011.pdf"
+    },
+    {
+      "id": 12,
+      "invoiceNumber": "INV-2024-012",
+      "date": "2024-01-26",
+      "supplier": "Western Imports",
+      "amount": "16720.00",
+      "status": "Approved",
+      "poNumber": "PO-2024-012",
+      "fileName": "invoice_012.pdf"
+    },
+    {
+      "id": 13,
+      "invoiceNumber": "INV-2024-013",
+      "date": "2024-01-27",
+      "supplier": "Southern Exports",
+      "amount": "8945.50",
+      "status": "Approved",
+      "poNumber": "PO-2024-013",
+      "fileName": "invoice_013.pdf"
+    },
+    {
+      "id": 14,
+      "invoiceNumber": "INV-2024-014",
+      "date": "2024-01-28",
+      "supplier": "Northern Trade",
+      "amount": "13670.25",
+      "status": "Pending",
+      "poNumber": "PO-2024-014",
+      "fileName": "invoice_014.pdf"
+    },
+    {
+      "id": 15,
+      "invoiceNumber": "INV-2024-015",
+      "date": "2024-01-29",
+      "supplier": "Midwest Partners",
+      "amount": "10425.00",
+      "status": "Approved",
+      "poNumber": "PO-2024-015",
+      "fileName": "invoice_015.pdf"
+    }
+  ],
+  "dashboardStats": {
+    "revenue": 847392,
+    "revenueChange": 12.5,
+    "totalInvoices": 1247,
+    "invoicesChange": 8.3,
+    "approved": 892,
+    "approvedChange": -3.2,
+    "pending": 355,
+    "pendingChange": 0
+  },
+  "chartData": {
+    "monthlyRevenue": [
+      { "month": "Jan", "value": 65000 },
+      { "month": "Feb", "value": 68000 },
+      { "month": "Mar", "value": 71000 },
+      { "month": "Apr", "value": 69000 },
+      { "month": "May", "value": 73000 },
+      { "month": "Jun", "value": 76000 },
+      { "month": "Jul", "value": 78000 },
+      { "month": "Aug", "value": 75000 },
+      { "month": "Sep", "value": 79000 },
+      { "month": "Oct", "value": 82000 },
+      { "month": "Nov", "value": 84000 },
+      { "month": "Dec", "value": 87000 }
+    ],
+    "invoiceStatus": [
+      { "label": "Approved", "value": 892, "color": "#FBCC5F" },
+      { "label": "Pending", "value": 285, "color": "#E5B84D" },
+      { "label": "Rejected", "value": 70, "color": "#CFA43B" }
+    ],
+    "topSuppliers": [
+      { "name": "Acme Corporation", "count": 45 },
+      { "name": "Global Tech Solutions", "count": 38 },
+      { "name": "Enterprise Services Inc", "count": 32 },
+      { "name": "Summit Supply Chain", "count": 28 },
+      { "name": "International Logistics", "count": 24 }
+    ],
+    "paymentMethods": [
+      { "method": "Credit Card", "percentage": 45, "color": "#FBCC5F" },
+      { "method": "Bank Transfer", "percentage": 30, "color": "#E5B84D" },
+      { "method": "Check", "percentage": 15, "color": "#CFA43B" },
+      { "method": "Other", "percentage": 10, "color": "#B98F29" }
+    ]
+  }
+}

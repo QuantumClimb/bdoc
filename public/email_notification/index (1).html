@@ -1,0 +1,1920 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>BDOC</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- ADD CACHE BUSTING -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    :root{
+      --bg:#fff; --panel-bg:#f9f9f9; --muted:#666; --border:#e0e0e0; --accent:#ffcc00;
+      --ink:#111; --table-head:#111; --splitter-bg:#f1f1f1; --splitter-hover:#e0e0e0;
+      --grid:#e8e8e8; --toolbar-bg:#fff; --toolbar-border:#e0e0e0;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);}
+    .app { display:flex; height:100vh; gap:8px; padding:14px; box-sizing:border-box; align-items:stretch; }
+
+    .left {
+      width:760px; min-width:56px; background:var(--panel-bg); border:1px solid var(--border);
+      border-radius:8px; padding:12px; box-sizing:border-box; overflow:auto;
+      box-shadow:0 6px 16px rgba(0,0,0,0.04); display:flex; flex-direction:column; transition: width .18s ease;
+    }
+    .left h2{margin:0 0 8px 0;font-size:16px;display:flex;align-items:center;gap:8px}
+
+    table.invoices{ width:100%; border-collapse:collapse; font-size:13px; background:#fff; }
+    table.invoices th, table.invoices td{
+      padding:10px 8px; text-align:left; vertical-align:middle; white-space:nowrap;
+      border-right:1px solid var(--grid);
+      border-bottom:1px solid var(--grid);
+    }
+    table.invoices thead th{
+      background:#fff; color:var(--table-head); font-weight:700; border-bottom:2px solid var(--border);
+      position:sticky; top:0; z-index:3;
+    }
+    table.invoices th:last-child, table.invoices td:last-child { border-right:0; }
+    table.invoices tbody tr:hover{ background:#fffbea; }
+    .invoice-link{ color:var(--accent); font-weight:600; cursor:pointer; text-decoration:underline; }
+    .small-muted{ font-size:12px; color:var(--muted); }
+
+    .date-filter-icon { display:inline-block; margin-left:6px; font-size:12px; padding:4px 6px; border-radius:6px; border:1px solid var(--grid); cursor:pointer; background:#fff; }
+    .date-filter-icon.active { background: #fff8e6; border-color:var(--accent); }
+
+    .line-row { background:#ffffff; }
+    .lines-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:6px; background:#fff; }
+    .lines-table th, .lines-table td {
+      padding:8px; border-right:1px solid var(--grid); border-bottom:1px solid var(--grid); text-align:left;
+    }
+    .lines-table th:last-child, .lines-table td:last-child { border-right:0; }
+    .lines-cell { padding:8px; background:#fbfbfb; }
+
+    .hdr-row { background:#fbfbfb; }
+    .hdr-cell { padding:8px; font-size:13px; color:var(--muted); }
+
+    .splitter { width:12px; display:flex; align-items:center; justify-content:center; cursor:col-resize; user-select:none; background:transparent; position:relative; transition: background .12s; }
+    .splitter:hover { background: var(--splitter-hover); border-radius:6px; }
+    .splitter .btn-collapse { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background:var(--splitter-bg); cursor:pointer; font-size:16px; box-shadow:0 2px 6px rgba(0,0,0,0.04); line-height:1; user-select:none; }
+    .splitter .drag-handle { position:absolute; left:50%; transform:translateX(-50%); top:0; bottom:0; width:3px; border-radius:2px; background:transparent; }
+    .splitter .drag-handle.visible { background:#d0d0d0; opacity:0.9; }
+
+    .right { flex:1; min-width:320px; display:flex; flex-direction:column; gap:12px; }
+    .viewer { flex:1; border:1px solid var(--border); border-radius:8px; padding:12px; background:#fff; overflow:hidden; display:flex; flex-direction:column; min-height:0; }
+    .viewer .toolbar{ display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+    .image-wrap{ display:flex; align-items:center; justify-content:center; flex:1; min-height:0; border:1px dashed #eee; border-radius:6px; padding:8px; background:linear-gradient(180deg,#ffffff,#fbfbfb); overflow:auto; }
+    .image-wrap iframe{ width:100%; height:100%; border:0; display:block; }
+    .image-wrap img{ max-width:100%; max-height:100%; border-radius:4px; box-shadow:0 6px 20px rgba(0,0,0,0.06); }
+
+    .meta{ display:none; }
+    .btn { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:#fff; padding:6px 8px; border-radius:6px; cursor:pointer; font-size:13px; }
+    .btn:active{ transform:translateY(1px); }
+
+    .editable { outline: 2px dashed rgba(255,204,0,0.25); background: #fffaf0; }
+
+    input.inline { padding:6px;border:1px solid #ddd;border-radius:4px;width:100%; box-sizing:border-box; }
+    td.center { text-align:center; }
+
+    .mini { display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-size:12px; }
+    .spinner{ width:36px;height:36px;border-radius:50%;border:4px solid rgba(0,0,0,0.08);border-top-color:var(--accent); animation:spin 1s linear infinite; }
+    @keyframes spin{ to { transform:rotate(360deg); } }
+
+    .date-filter-popup {
+      position: absolute;
+      min-width:280px;
+      background:#fff;
+      border:1px solid var(--border);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      padding:8px;
+      border-radius:8px;
+      z-index:10000;
+      font-size:13px;
+    }
+    .date-filter-popup label{ font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
+    .date-filter-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+
+    .date-filters-row { display:flex; gap:8px; margin-top:8px; }
+    .date-filters-row select, .date-filters-row input { flex:1; padding:8px; border:1px solid #ddd; border-radius:6px; }
+
+    /* NEW: Workflow Status Styles */
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-block;
+    }
+
+    .status-draft { background: #e3f2fd; color: #1976d2; }
+    .status-submitted { background: #fff3e0; color: #f57c00; }
+    .status-pending { background: #fff8e1; color: #ffa000; }
+    .status-approved { background: #e8f5e8; color: #2e7d32; }
+    .status-rejected { background: #ffebee; color: #c62828; }
+    .status-request_edit { background: #fff3e0; color: #ef6c00; }
+
+    /* NEW: Checkbox Styles - ALWAYS VISIBLE */
+    .checkbox-cell {
+      width: 40px;
+      text-align: center;
+      padding: 8px 4px !important;
+      position: relative;
+      z-index: 2;
+    }
+
+    .bulk-checkbox {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--accent);
+      position: relative;
+      z-index: 3;
+    }
+
+    .bulk-checkbox:checked {
+      background-color: var(--accent);
+    }
+
+    .bulk-checkbox:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .header-checkbox {
+      margin: 0 auto;
+    }
+
+    /* Ensure checkboxes stay visible in edit mode */
+    [data-editing="true"] .checkbox-cell {
+      background: #fff !important;
+    }
+
+    [data-editing="true"] .bulk-checkbox {
+      transform: scale(1.1);
+    }
+
+    /* NEW: Pending changes highlight */
+    .has-pending-changes {
+      background: #fffaf0 !important;
+      border-left: 3px solid var(--accent);
+    }
+
+    /* NEW: Active editing row */
+    .editing-active {
+      background: #fffaf0 !important;
+      border-left: 3px solid var(--accent);
+      box-shadow: 0 2px 8px rgba(255,204,0,0.1);
+    }
+
+    .editing-active td {
+      background: #fffaf0 !important;
+    }
+
+    @media (max-width:900px){ .app{flex-direction:column; padding:8px} .left{width:auto; height:40vh} .splitter{display:none} }
+  </style>
+</head>
+<body>
+  <div class="app" id="appRoot">
+    <div class="left" id="leftPane" aria-expanded="true">
+      <h2 style="margin:0">Invoices</h2>
+
+      <div id="leftContent">
+        <div style="overflow:auto; position:relative;">
+          <table class="invoices" id="invoicesTable" aria-live="polite">
+            <thead>
+              <tr>
+                <!-- NEW: Checkbox Column -->
+                <th style="width:40px" class="checkbox-cell">
+                  <input type="checkbox" class="bulk-checkbox header-checkbox" id="selectAllCheckbox" title="Select all invoices">
+                </th>
+                <th style="width:48px">S.No</th>
+                <th>Inv No.</th>
+                <th id="hdrInvoiceDate">Inv Date
+                  <span id="dateFilterIcon" class="date-filter-icon" role="button" tabindex="0" title="Filter by date">▾</span>
+                </th>
+                <th>Supplier</th>
+                <th style="text-align:right">Inv Amt</th>
+                <th style="width:72px; text-align:center">+info</th>
+                <th style="width:64px; text-align:center">AP_Lines</th>
+                <!-- REMOVED: Approve Column -->
+                <th style="width:100px; text-align:center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+
+          <div id="dateFilterPopup" class="date-filter-popup" style="display:none;" aria-hidden="true">
+            <div>
+              <label for="dateSearch">Type year, month or date (or pick below)</label>
+              <input id="dateSearch" type="text" placeholder="e.g., 2025, 2025-08, 2025-08-20" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;">
+            </div>
+
+            <div class="date-filters-row" style="margin-top:8px">
+              <select id="yearSelect" title="Year">
+                <option value="">Year</option>
+              </select>
+              <select id="monthSelect" title="Month">
+                <option value="">Month</option>
+              </select>
+              <select id="daySelect" title="Day">
+                <option value="">Day</option>
+              </select>
+            </div>
+
+            <div class="date-filter-actions">
+              <button id="btnDateClear" class="btn">Clear</button>
+              <button id="btnDateApply" class="btn" style="background:var(--accent); border-color:var(--accent);">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="splitter" id="splitter" title="Drag to resize. Click arrow to toggle viewer">
+      <div class="btn-collapse" id="centerCollapseBtn" aria-pressed="false" title="Toggle viewer">›</div>
+      <div class="drag-handle" id="dragHandle"></div>
+    </div>
+
+    <div class="right" id="rightPane" aria-expanded="true">
+      <div class="viewer" id="viewer">
+        <div class="toolbar">
+          <div class="title" id="viewerTitle"></div>
+          <div style="flex:1"></div>
+        </div>
+
+        <div class="image-wrap" id="imageWrap">
+          <div class="small-muted">No invoice selected</div>
+        </div>
+
+        <div class="meta" id="metaBox" aria-hidden="true"></div>
+      </div>
+      <div id="rightMini" style="display:none;"><div class="mini">Viewer</div></div>
+    </div>
+  </div>
+
+  <script>
+    const apiRoot = ""; // keep as same-origin or set your root
+    const COLS = 9; // updated from 10 -> 9 to remove the approve column
+    let isEditing = false;
+    let selectedInvoices = new Set(); // Track selected invoice numbers
+    let currentEditingInvoice = null; // 🔥 NEW: Track which invoice is currently being edited
+
+    // date filter state
+    const dateFilter = { selected: null };
+    let uniqueDates = [];
+    let years = [];
+    let monthsByYear = {};
+    let daysByYearMonth = {};
+
+    const tbody = document.getElementById("tbody");
+    const imageWrap = document.getElementById("imageWrap");
+    const centerCollapseBtn = document.getElementById("centerCollapseBtn");
+    const splitter = document.getElementById("splitter");
+    const dragHandle = document.getElementById("dragHandle");
+    const leftPane = document.getElementById('leftPane');
+    const rightPane = document.getElementById('rightPane');
+    const viewer = document.getElementById('viewer');
+
+    // date filter UI elements
+    const dateFilterIcon = document.getElementById('dateFilterIcon');
+    const dateFilterPopup = document.getElementById('dateFilterPopup');
+    const dateSearch = document.getElementById('dateSearch');
+    const yearSelect = document.getElementById('yearSelect');
+    const monthSelect = document.getElementById('monthSelect');
+    const daySelect = document.getElementById('daySelect');
+    const btnDateApply = document.getElementById('btnDateApply');
+    const btnDateClear = document.getElementById('btnDateClear');
+
+    // REMOVED: Toolbar button references since toolbar is deleted
+    const searchInput = document.getElementById("searchInput");
+    const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+
+    // --- Edit history (lightweight snapshotting) ---
+    const editHistory = [];
+    const redoStack = [];
+
+    function captureSnapshot(pushIfChanged = true){
+      const snap = {
+        tbodyHTML: tbody.innerHTML,
+        imageHTML: imageWrap.innerHTML,
+        isEditing: !!isEditing
+      };
+      const last = editHistory.length ? editHistory[editHistory.length - 1] : null;
+      const changed = !last || last.tbodyHTML !== snap.tbodyHTML || last.imageHTML !== snap.imageHTML || last.isEditing !== snap.isEditing;
+      if(pushIfChanged && changed){
+        editHistory.push(snap);
+        redoStack.length = 0;
+      }
+      return snap;
+    }
+
+    function restoreSnapshot(snap){
+      if(!snap) return;
+      tbody.innerHTML = snap.tbodyHTML;
+      imageWrap.innerHTML = snap.imageHTML;
+      setEditMode(snap.isEditing, { suppressSnapshot: true });
+      const seen = new Set();
+      Array.from(tbody.querySelectorAll('tr.header-row')).forEach(tr=>{
+        const d = tr.dataset.date || '';
+        if(d) seen.add(d);
+      });
+      const datesArr = Array.from(seen).sort((a,b)=> a < b ? 1 : -1);
+      updateDateIndexes(datesArr);
+      applyFilters();
+    }
+
+    function doUndo(){
+      if(editHistory.length < 2) {
+        console.warn('Nothing to undo');
+        return;
+      }
+      const current = editHistory.pop();
+      redoStack.push(current);
+      const prev = editHistory[editHistory.length - 1];
+      if(prev) restoreSnapshot(prev);
+    }
+
+    function doRedo(){
+      if(!redoStack.length){
+        console.warn('Nothing to redo');
+        return;
+      }
+      const snap = redoStack.pop();
+      const current = {
+        tbodyHTML: tbody.innerHTML,
+        imageHTML: imageWrap.innerHTML,
+        isEditing: !!isEditing
+      };
+      editHistory.push(current);
+      restoreSnapshot(snap);
+    }
+
+    // capture input changes
+    document.addEventListener('input', (ev) => {
+      const target = ev.target;
+      if(target && target.classList && target.classList.contains('inline')){
+        captureSnapshot(true);
+      }
+    }, { passive: true });
+
+    // ensure initial snapshot after loadInvoices
+    function pushInitialSnapshotIfEmpty(){
+      if(editHistory.length === 0) captureSnapshot(true);
+    }
+
+    // utility helpers
+    function escapeHtml(s){ if (s == null) return ""; s = String(s); return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function formatAmount(a){ if (a == null || a === "") return ""; const n = Number(String(a).replace(/[^0-9.-]/g,'')); return isNaN(n) ? String(a) : n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+    // 🔥 NEW: Track which invoice is being edited
+    function setEditingInvoice(invoiceNumber) {
+      // Remove editing class from all rows
+      document.querySelectorAll('tr.header-row').forEach(row => {
+        row.classList.remove('editing-active');
+        row.removeAttribute('data-editing');
+      });
+      
+      // Add editing class to target row
+      if (invoiceNumber) {
+        const targetRow = document.querySelector(`tr.header-row[data-invoice="${invoiceNumber}"]`);
+        if (targetRow) {
+          targetRow.classList.add('editing-active');
+          targetRow.setAttribute('data-editing', 'true');
+          currentEditingInvoice = invoiceNumber;
+          console.log(`🎯 Now editing invoice: ${invoiceNumber}`);
+        }
+      } else {
+        currentEditingInvoice = null;
+      }
+    }
+
+    // 🔥 NEW: Check for pending changes and merge with Oracle data
+    async function getEnhancedInvoiceData(oracleData) {
+        try {
+            // Check if this invoice has pending changes in history
+            const response = await fetch(`${apiRoot}/api/workflow/get-pending-changes/${encodeURIComponent(oracleData.invoice_number)}`);
+            
+            if (response.ok) {
+                const pendingData = await response.json();
+                
+                if (pendingData.success && pendingData.pending_changes) {
+                    const pendingChanges = pendingData.pending_changes;
+                    
+                    // If we have header changes, merge them with Oracle data
+                    if (pendingChanges.header_changes && Object.keys(pendingChanges.header_changes).length > 0) {
+                        console.log(`🔄 Found pending changes for ${oracleData.invoice_number}:`, pendingChanges.header_changes);
+                        
+                        // Create enhanced data with pending changes
+                        const enhancedData = { ...oracleData };
+                        
+                        // Apply pending changes to the data
+                        Object.keys(pendingChanges.header_changes).forEach(field => {
+                            // Extract the new value from the change diff (format: "old → new")
+                            const change = pendingChanges.header_changes[field];
+                            const newValue = change.split('→')[1]?.trim() || change;
+                            enhancedData[field] = newValue;
+                        });
+                        
+                        // Mark as having pending changes
+                        enhancedData.has_pending_changes = true;
+                        enhancedData.pending_changes = pendingChanges;
+                        
+                        return enhancedData;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error(`❌ Error checking pending changes for ${oracleData.invoice_number}:`, error);
+        }
+        
+        // Return original data if no pending changes or error
+        return { ...oracleData, has_pending_changes: false };
+    }
+
+    // 🔥 ENHANCED: Status display that shows "DRAFT" for pending changes
+    function getStatusDisplay(status, hasPendingChanges = false) {
+        // 🔥 OVERRIDE: If invoice has pending changes, show DRAFT status
+        if (hasPendingChanges) {
+            return `<span class="status-badge status-draft">DRAFT</span>`;
+        }
+        
+        // Existing status logic for other cases
+        const statusMap = {
+            'draft': { text: 'DRAFT', class: 'status-draft' },
+            'pending': { text: 'PENDING', class: 'status-pending' },
+            'submitted': { text: 'PENDING', class: 'status-pending' },
+            'approved': { text: 'APPROVED', class: 'status-approved' },
+            'approve': { text: 'APPROVED', class: 'status-approved' },
+            'rejected': { text: 'REJECTED', class: 'status-rejected' },
+            'reject': { text: 'REJECTED', class: 'status-rejected' },
+            'request_edit': { text: 'EDIT REQUESTED', class: 'status-request_edit' }
+        };
+        
+        const normalizedStatus = (status || 'draft').toString().toLowerCase();
+        const statusInfo = statusMap[normalizedStatus] || statusMap['draft'];
+        
+        return `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
+    }
+
+    // NEW: Bulk submission function - FIXED to only submit selected invoices
+// 🔥 ENHANCED: Bulk submission function with pending changes integration
+async function handleBulkSubmit() {
+    if (selectedInvoices.size === 0) {
+        alert('Please select at least one invoice to submit.');
+        return;
+    }
+
+    try {
+        // 🔥 ENHANCEMENT: Check for pending changes for each selected invoice
+        const invoicesWithChanges = [];
+        
+        for (const invoiceNumber of selectedInvoices) {
+            // Check if this invoice has pending changes
+            const pendingResponse = await fetch(`${apiRoot}/api/workflow/get-pending-changes/${encodeURIComponent(invoiceNumber)}`);
+            
+            let hasPendingChanges = false;
+            if (pendingResponse.ok) {
+                const pendingData = await pendingResponse.json();
+                hasPendingChanges = pendingData.success && pendingData.pending_changes && 
+                                  (pendingData.pending_changes.header_changes || pendingData.pending_changes.line_changes);
+            }
+            
+            invoicesWithChanges.push({
+                invoice_number: invoiceNumber,
+                has_pending_changes: hasPendingChanges
+            });
+        }
+
+        console.log('📦 Bulk submitting selected invoices with pending changes check:', invoicesWithChanges);
+        
+        // 🔥 ENHANCEMENT: Use the enhanced bulk-submit endpoint
+        const response = await fetch(`${apiRoot}/api/workflow/bulk-submit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                invoices: Array.from(selectedInvoices).map(inv => ({ invoice_number: inv })),
+                notes: 'Bulk submitted for approval via UI',
+                submitter_email: 'approvalsystembee@gmail.com' // Get from session
+            })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            // ✅ SUCCESS - Update UI for all successful submissions
+            result.results.forEach(item => {
+                if (item.success) {
+                    const row = document.querySelector(`tr.header-row[data-invoice="${item.invoice_number}"]`);
+                    if (row) {
+                        const statusCell = row.querySelector('td:last-child');
+                        const checkbox = row.querySelector('.bulk-checkbox');
+                        
+                        if (statusCell) {
+                            // Show PENDING status instead of DRAFT
+                            statusCell.innerHTML = getStatusDisplay('pending');
+                        }
+                        if (checkbox) {
+                            checkbox.checked = false;
+                            checkbox.disabled = true;
+                            checkbox.title = 'Cannot select - already submitted';
+                        }
+                        
+                        // Remove from selected invoices
+                        selectedInvoices.delete(item.invoice_number);
+                    }
+                }
+            });
+
+            const successful = result.summary.successful;
+            const failed = result.summary.failed;
+            
+            if (failed === 0) {
+                alert(`✅ Successfully submitted ${successful} invoice(s) for approval.`);
+            } else {
+                alert(`✅ ${successful} submitted successfully, ❌ ${failed} failed. Check console for details.`);
+                console.log('Bulk submission details:', result.results);
+            }
+
+            // Update selection UI
+            updateSelectionUI();
+            
+            // 🔥 ENHANCEMENT: Refresh to show updated statuses
+            loadInvoices();
+            
+        } else {
+            // Error
+            alert('Bulk submission failed: ' + (result.error || 'Unknown error'));
+            console.error('❌ Bulk submission failed:', result);
+        }
+        
+    } catch (error) {
+        console.error('❌ Network error during bulk submission:', error);
+        alert('Network error during bulk submission. Check console for details.');
+    }
+}
+
+    // NEW: Selection management functions
+    function updateSelectionUI() {
+      // Update select all checkbox state
+      const visibleRows = Array.from(tbody.querySelectorAll('tr.header-row:not([style*="display: none"])'));
+      const visibleSelected = visibleRows.filter(row => 
+        selectedInvoices.has(row.dataset.invoice)
+      ).length;
+      
+      selectAllCheckbox.checked = visibleSelected > 0 && visibleSelected === visibleRows.length;
+      selectAllCheckbox.indeterminate = visibleSelected > 0 && visibleSelected < visibleRows.length;
+    }
+
+    function clearSelection() {
+      selectedInvoices.clear();
+      // Uncheck all checkboxes
+      document.querySelectorAll('.bulk-checkbox:not(.header-checkbox)').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      updateSelectionUI();
+    }
+
+    function toggleSelectAll(checked) {
+      const visibleRows = Array.from(tbody.querySelectorAll('tr.header-row:not([style*="display: none"])'));
+      
+      visibleRows.forEach(row => {
+        const invoiceNumber = row.dataset.invoice;
+        const checkbox = row.querySelector('.bulk-checkbox');
+        
+        // Only select if checkbox is enabled (draft invoices) AND we're checking
+        if (checkbox && !checkbox.disabled) {
+          if (checked) {
+            selectedInvoices.add(invoiceNumber);
+            checkbox.checked = true;
+          } else {
+            selectedInvoices.delete(invoiceNumber);
+            checkbox.checked = false;
+          }
+        } else if (!checked) {
+          // If unchecking, remove from selection even if disabled
+          selectedInvoices.delete(invoiceNumber);
+          if (checkbox) checkbox.checked = false;
+        }
+      });
+      
+      updateSelectionUI();
+    }
+
+    function toggleInvoiceSelection(invoiceNumber, checked) {
+      if (checked) {
+        selectedInvoices.add(invoiceNumber);
+      } else {
+        selectedInvoices.delete(invoiceNumber);
+      }
+      updateSelectionUI();
+    }
+
+    // NEW: Function to update checkbox states based on edit mode and invoice status
+   // In updateCheckboxStates() - SIMPLE LOGIC
+function updateCheckboxStates() {
+  document.querySelectorAll('tr.header-row').forEach(row => {
+    const invoiceNumber = row.dataset.invoice;
+    const checkbox = row.querySelector('.bulk-checkbox');
+    const statusCell = row.querySelector('td:last-child');
+    
+    if (checkbox && statusCell) {
+      const statusText = statusCell.textContent.toLowerCase();
+      
+      // ✅ ONLY allow selection of DRAFT invoices
+      if (statusText.includes('draft')) {
+        checkbox.disabled = false;
+        checkbox.title = 'Select for bulk submission';
+      } else {
+        checkbox.disabled = true;
+        checkbox.title = 'Cannot select - already submitted or approved';
+        // Uncheck if previously selected but now disabled
+        if (checkbox.checked) {
+          checkbox.checked = false;
+          selectedInvoices.delete(invoiceNumber);
+        }
+      }
+    }
+  });
+  updateSelectionUI();
+}
+
+    function collapseAllDetails(){
+      document.querySelectorAll('tr.hdr-row').forEach(r => {
+        r.style.display = "none";
+        r.dataset.open = "false";
+      });
+      document.querySelectorAll('tr.line-row').forEach(r => {
+        r.style.display = "none";
+        r.dataset.open = "false";
+      });
+      document.querySelectorAll('.btn-headers').forEach(b => {
+        b.innerHTML = '›';
+        b.setAttribute('aria-expanded','false');
+      });
+      document.querySelectorAll('.btn-expand').forEach(b => {
+        b.innerHTML = '›';
+        b.setAttribute('aria-expanded','false');
+      });
+    }
+
+    function toggleCenter(){
+      const collapsed = centerCollapseBtn.getAttribute('aria-pressed') === 'true';
+      if (collapsed) {
+        centerCollapseBtn.setAttribute('aria-pressed','false');
+        viewer.style.display='flex'; rightPane.style.flex=''; document.getElementById('rightMini').style.display='none';
+      } else {
+        centerCollapseBtn.setAttribute('aria-pressed','true');
+        viewer.style.display='none'; rightPane.style.flex='0 0 56px'; document.getElementById('rightMini').style.display='';
+        collapseAllDetails();
+      }
+    }
+    centerCollapseBtn.addEventListener('click', toggleCenter);
+
+    // splitter drag
+    let dragging=false,startX=0,startWidth=0;
+    splitter.addEventListener('mousedown', (e)=>{ if(e.button!==0) return; dragging=true; startX=e.clientX; startWidth=leftPane.getBoundingClientRect().width; dragHandle.classList.add('visible'); document.body.style.cursor='col-resize'; e.preventDefault();});
+    window.addEventListener('mousemove',(e)=>{ if(!dragging) return; const dx=e.clientX-startX; let w=Math.max(56,startWidth+dx); const max=Math.max(200,window.innerWidth-320); if(w>max) w=max; leftPane.style.width=w+'px';});
+    window.addEventListener('mouseup',()=>{ if(!dragging) return; dragging=false; dragHandle.classList.remove('visible'); document.body.style.cursor='';});
+    splitter.addEventListener('dblclick', toggleCenter);
+
+    // 🔥 ENHANCED: Load invoices with pending changes check
+async function loadInvoices(){
+    collapseAllDetails();
+    tbody.innerHTML = `<tr><td colspan="${COLS}" class='small-muted'>Loading...</td></tr>`;
+    try {
+        const res = await fetch(apiRoot + "/api/invoices");
+        if(!res.ok){ 
+            const err = await res.json().catch(()=>null); 
+            throw new Error(err?.details || res.statusText || "Failed to fetch invoices"); 
+        }
+        let rows = await res.json();
+        
+        console.log("🔍 BACKEND RESPONSE:");
+        rows.slice(0, 3).forEach((row, i) => {
+            console.log(`Invoice ${i}:`, row.invoice_number, "Status:", row.status);
+        });
+        
+        // ✅ SIMPLE: Render rows directly without complex enhancement
+        renderRows(rows);
+        
+        // Initialize checkbox states
+        updateCheckboxStates();
+        
+        pushInitialSnapshotIfEmpty();
+    } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="${COLS}" class="small-muted">Error: ${escapeHtml(err.message)}</td></tr>`;
+    }
+}
+
+    function normalizeDateStr(s){
+      if(!s) return null;
+      const t = String(s).slice(0,10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(t) ? t : null;
+    }
+
+    /* ---------- live keyword search ---------- */
+    (function(){
+      function debounce(fn, wait = 200){
+        let t = null;
+        return function(...args){
+          clearTimeout(t);
+          t = setTimeout(()=> fn.apply(this, args), wait);
+        };
+      }
+
+      function normalizeText(s){
+        if(!s) return "";
+        return String(s).toLowerCase().normalize("NFKD").replace(/\s+/g," ").trim();
+      }
+
+      function tokenize(q){
+        if(!q) return [];
+        return normalizeText(q).split(/\s+/).map(t => t.replace(/[^\w\-\/@.]+/g,"")).filter(Boolean);
+      }
+
+      function applyKeywordSearchRaw(query){
+        const q = (query || "").toString().trim();
+        const tokens = tokenize(q);
+
+        if(tokens.length === 0){
+          try { applyFilters(); } catch(e) { console.error('applyFilters missing', e); }
+          document.querySelectorAll('.invoice-link').forEach(el => el.style.color = '#111');
+          return;
+        }
+
+        Array.from(tbody.querySelectorAll('tr.header-row')).forEach(header => {
+          const rowDate = header.dataset.date || '';
+          const matchDate = !dateFilter.selected || rowDate.startsWith(dateFilter.selected);
+          if(!matchDate){
+            header.style.display = 'none';
+            const hdrRow = header.nextElementSibling;
+            const lineRow = hdrRow ? hdrRow.nextElementSibling : null;
+            if(hdrRow && hdrRow.classList.contains('hdr-row')) hdrRow.style.display = 'none';
+            if(lineRow && lineRow.classList.contains('line-row')) lineRow.style.display = 'none';
+            return;
+          }
+
+          const pieces = [];
+          const invEl = header.querySelector('.invoice-link');
+          if(invEl) pieces.push(invEl.textContent || invEl.dataset.inv || '');
+          header.querySelectorAll('td').forEach(td=>{
+            if(td.classList.contains('cell-sno') || td.classList.contains('center')) return;
+            pieces.push(td.textContent || '');
+          });
+          const hdrRow = header.nextElementSibling && header.nextElementSibling.classList.contains('hdr-row') ? header.nextElementSibling : null;
+          if(hdrRow) pieces.push(hdrRow.textContent || '');
+          const lineRow = hdrRow && hdrRow.nextElementSibling && hdrRow.nextElementSibling.classList.contains('line-row') ? hdrRow.nextElementSibling : null;
+          if(lineRow) pieces.push(lineRow.textContent || '');
+
+          const hay = normalizeText(pieces.join(' '));
+          const matched = tokens.every(t => hay.indexOf(t) !== -1);
+
+          header.style.display = matched ? "" : "none";
+          if(hdrRow) hdrRow.style.display = matched ? (hdrRow.dataset.open === "true" ? "" : "none") : "none";
+          if(lineRow) lineRow.style.display = matched ? (lineRow.dataset.open === "true" ? "" : "none") : "none";
+        });
+
+        document.querySelectorAll('.invoice-link').forEach(el => {
+          const hdr = el.closest('tr.header-row');
+          if(hdr && hdr.style.display !== 'none') el.style.color = '#111';
+          else el.style.color = '';
+        });
+      }
+
+      const debouncedApply = debounce(applyKeywordSearchRaw, 180);
+
+      window.applyKeywordSearch = function(q){ debouncedApply(q); };
+
+      // Search input handler
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          window.applyKeywordSearch(e.target.value);
+        });
+      }
+
+      window.addEventListener('app:search', (ev) => {
+        try {
+          const q = ev && ev.detail && typeof ev.detail.query !== 'undefined' ? ev.detail.query : '';
+          window.applyKeywordSearch(q);
+        } catch(e) { console.error('app:search handler error', e); }
+      });
+
+      window.addEventListener('message', (ev) => {
+        try {
+          const data = ev.data || {};
+          if(data && data.type === 'INVOICE_CMD' && data.cmd === 'search'){
+            const q = data.payload && data.payload.query ? data.payload.query : '';
+            window.applyKeywordSearch(q);
+          }
+        } catch(e){ console.error('message search handler', e); }
+      });
+
+    })();
+
+    // 🔥 ENHANCED: Render rows with pending changes integration
+function renderRows(rows){
+    tbody.innerHTML = "";
+    if(!rows.length){ 
+        tbody.innerHTML = `<tr><td colspan="${COLS}" class="small-muted">No records</td></tr>`; 
+        updateDateIndexes([]); 
+        return; 
+    }
+    
+    const frag=document.createDocumentFragment();
+    const seen = new Set();
+    
+    for(const r of rows){
+        const tr=document.createElement("tr"); 
+        tr.className="header-row";
+        const sno = (r.sno ?? '');
+        const invno = (r.invoice_number ?? r.inv_no ?? r.invnum ?? '');
+        const dateStr = r.invoice_date ? String(r.invoice_date).slice(0,10) : '';
+        const normDate = normalizeDateStr(dateStr);
+        if(normDate) seen.add(normDate);
+        
+        // ✅ SIMPLE: Use data directly from Oracle
+        const supplier = r.supplier_name ?? r.supplier ?? '';
+        const invoiceAmount = r.invoice_amount ?? r.amount ?? '';
+        const supplier_site = r.supplier_site ?? '';
+        const invoice_type = r.invoice_type ?? '';
+        const payment_terms = r.payment_terms ?? '';
+        const business_unit = r.business_unit ?? '';
+        const supplier_number = r.supplier_number ?? '';
+        
+        // ✅ SIMPLE: Status comes directly from Oracle table
+        const statusVal = (r.status ?? 'draft').toString().toLowerCase();
+        
+        console.log(`🔍 RENDER: Invoice ${invno} - Status: "${statusVal}"`);
+        
+        const uidLines = `lines-${encodeURIComponent(invno)}-${sno}`;
+        const uidHdr = `hdr-${encodeURIComponent(invno)}-${sno}`;
+
+        tr.dataset.date = normDate || '';
+        tr.dataset.invoice = invno;
+        
+        // ✅ SIMPLE STATUS DISPLAY
+        const statusDisplayHtml = getStatusDisplay(statusVal);
+
+        tr.innerHTML = `
+          <td class="checkbox-cell">
+            <input type="checkbox" class="bulk-checkbox" data-invoice="${escapeHtml(invno)}" 
+                   onchange="toggleInvoiceSelection('${escapeHtml(invno)}', this.checked)"
+                   ${statusVal === 'draft' ? '' : 'disabled'}>
+          </td>
+          <td class="cell-sno">${escapeHtml(sno)}</td>
+          <td class="cell-inv"><span class="invoice-link" data-inv="${encodeURIComponent(invno)}">${escapeHtml(invno)}</span></td>
+          <td class="cell-date" data-field="invoice_date" data-inv="${escapeHtml(invno)}">${escapeHtml(dateStr)}</td>
+          <td class="cell-supplier" data-field="supplier_name" data-inv="${escapeHtml(invno)}">${escapeHtml(supplier)}</td>
+          <td class="cell-amount" data-field="invoice_amount" data-inv="${escapeHtml(invno)}" style="text-align:right">${escapeHtml(formatAmount(invoiceAmount))}</td>
+          <td class="center">
+            <button class="btn btn-headers" 
+                    data-uid="${uidHdr}"
+                    data-uidlines="${uidLines}"
+                    data-site="${escapeHtml(supplier_site)}"
+                    data-type="${escapeHtml(invoice_type)}"
+                    data-terms="${escapeHtml(payment_terms)}"
+                    data-bu="${escapeHtml(business_unit)}"
+                    data-suppnum="${escapeHtml(supplier_number)}"
+                    aria-expanded="false"
+                    title="Toggle header details">›</button>
+          </td>
+          <td class="center"><button class="btn btn-expand" data-inv="${encodeURIComponent(invno)}" data-uid="${uidLines}" aria-expanded="false" title="Toggle lines">${'›'}</button></td>
+          <td class="center">
+            ${statusDisplayHtml}
+          </td>
+        `;
+        frag.appendChild(tr);
+
+        const hdrSpacer = document.createElement("tr");
+        hdrSpacer.className = "hdr-row";
+        hdrSpacer.id = uidHdr;
+        hdrSpacer.dataset.open = "false";
+        hdrSpacer.style.display = "none";
+        hdrSpacer.innerHTML = `<td class="hdr-cell" colspan="${COLS}"></td>`;
+        frag.appendChild(hdrSpacer);
+
+        const spacer=document.createElement("tr");
+        spacer.className="line-row"; spacer.id=uidLines;
+        spacer.dataset.open = "false";
+        spacer.style.display="none";
+        spacer.innerHTML=`<td class="lines-cell" colspan="${COLS}"></td>`;
+        frag.appendChild(spacer);
+    }
+    tbody.appendChild(frag);
+
+    const datesArr = Array.from(seen).sort((a,b)=> a < b ? 1 : -1);
+    updateDateIndexes(datesArr);
+
+    applyFilters();
+
+    // ✅ REMOVED: Auto-opening first invoice
+    // Now users must click on invoices to load their documents
+    
+    console.log("✅ renderRows completed with pending changes integration");
+}
+
+    function updateDateIndexes(datesArr){
+      uniqueDates = datesArr;
+
+      years = [];
+      monthsByYear = {};
+      daysByYearMonth = {};
+
+      for(const d of uniqueDates){
+        const y = d.slice(0,4);
+        const ym = d.slice(0,7);
+        const day = d.slice(8,10);
+
+        if(!years.includes(y)) years.push(y);
+
+        monthsByYear[y] = monthsByYear[y] || [];
+        const m = d.slice(5,7);
+        if(!monthsByYear[y].includes(m)) monthsByYear[y].push(m);
+
+        daysByYearMonth[ym] = daysByYearMonth[ym] || [];
+        if(!daysByYearMonth[ym].includes(day)) daysByYearMonth[ym].push(day);
+      }
+
+      years.sort((a,b)=> b.localeCompare(a));
+      for(const y of Object.keys(monthsByYear)){
+        monthsByYear[y].sort((a,b)=> b.localeCompare(a));
+      }
+      for(const ym of Object.keys(daysByYearMonth)){
+        daysByYearMonth[ym].sort((a,b)=> b.localeCompare(a));
+      }
+
+      yearSelect.innerHTML = '<option value="">Year</option>';
+      for(const y of years) yearSelect.appendChild(new Option(y, y));
+
+      monthSelect.innerHTML = '<option value="">Month</option>';
+      daySelect.innerHTML = '<option value="">Day</option>';
+
+      if(dateFilter.selected) dateFilterIcon.classList.add('active'); else dateFilterIcon.classList.remove('active');
+    }
+
+    function populateMonthsForYear(y){
+      monthSelect.innerHTML = '<option value="">Month</option>';
+      daySelect.innerHTML = '<option value="">Day</option>';
+      if(!y || !monthsByYear[y]) return;
+      for(const m of monthsByYear[y]) {
+        const label = m;
+        monthSelect.appendChild(new Option(label, m));
+      }
+    }
+    function populateDaysForYearMonth(ym){
+      daySelect.innerHTML = '<option value="">Day</option>';
+      if(!ym || !daysByYearMonth[ym]) return;
+      for(const d of daysByYearMonth[ym]) {
+        daySelect.appendChild(new Option(d, d));
+      }
+    }
+
+    function populateHeaderRowFromButton(hdrRow, hdrBtn){
+      const site = hdrBtn.dataset.site || '';
+      const type = hdrBtn.dataset.type || '';
+      const terms = hdrBtn.dataset.terms || '';
+      const bu = hdrBtn.dataset.bu || '';
+      const suppnum = hdrBtn.dataset.suppnum || '';
+
+      let rowCellsHtml;
+      if(isEditing){
+        rowCellsHtml = `
+          <tr data-hdr>
+            <td data-field="supplier_site"><input class="inline" data-field="supplier_site" value="${escapeHtml(site)}"></td>
+            <td data-field="invoice_type"><input class="inline" data-field="invoice_type" value="${escapeHtml(type)}"></td>
+            <td data-field="payment_terms"><input class="inline" data-field="payment_terms" value="${escapeHtml(terms)}"></td>
+            <td data-field="business_unit"><input class="inline" data-field="business_unit" value="${escapeHtml(bu)}"></td>
+            <td data-field="supplier_number"><input class="inline" data-field="supplier_number" value="${escapeHtml(suppnum)}"></td>
+          </tr>
+        `;
+      } else {
+        rowCellsHtml = `
+          <tr data-hdr>
+            <td data-field="supplier_site">${escapeHtml(site)}</td>
+            <td data-field="invoice_type">${escapeHtml(type)}</td>
+            <td data-field="payment_terms">${escapeHtml(terms)}</td>
+            <td data-field="business_unit">${escapeHtml(bu)}</td>
+            <td data-field="supplier_number">${escapeHtml(suppnum)}</td>
+          </tr>
+        `;
+      }
+
+      const html = `
+        <div style="padding:6px 4px;">
+          <table class="lines-table" style="width:100%;margin:0">
+            <thead>
+              <tr>
+                <th>Supplier Site</th><th>Inv Type</th><th>Payment Terms</th><th>Business Unit</th><th>Supplier No.</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowCellsHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
+      const cell = hdrRow.querySelector('td.hdr-cell');
+      cell.innerHTML = html;
+
+      if(isEditing){
+        cell.classList.add('editable');
+      } else {
+        cell.classList.remove('editable');
+      }
+    }
+
+function convertLinesTableForEdit(tbl, enable){
+    if(!tbl) return;
+    const tbodyRows = tbl.tBodies && tbl.tBodies.length ? Array.from(tbl.tBodies[0].rows) : Array.from(tbl.querySelectorAll('tbody tr'));
+    for(const tr of tbodyRows){
+        if(tr.querySelector('th') || tr.hasAttribute('data-header')) continue;
+
+        if(enable){
+            // 🔥 FIX: Make line type editable too
+            const lineTypeTd = tr.children[1];
+            if(lineTypeTd && !lineTypeTd.querySelector('input')){
+                const raw = lineTypeTd.textContent.trim();
+                lineTypeTd.innerHTML = `<input class="inline" data-field="line_type" value="${escapeHtml(raw)}">`;
+            }
+            
+            const amountTd = tr.children[2];
+            if(amountTd && !amountTd.querySelector('input')){
+                const raw = amountTd.textContent.trim();
+                amountTd.innerHTML = `<input class="inline" data-field="amount" value="${escapeHtml(raw)}">`;
+            }
+            
+            const descTd = tr.children[3];
+            if(descTd && !descTd.querySelector('input')){
+                const rawd = descTd.textContent.trim();
+                descTd.innerHTML = `<input class="inline" data-field="description" value="${escapeHtml(rawd)}">`;
+            }
+            
+            tr.classList.add('editable');
+        } else {
+            // 🔥 FIX: Save line type changes too
+            const lineTypeTd = tr.children[1];
+            if(lineTypeTd){
+                const inp = lineTypeTd.querySelector('input[data-field="line_type"]');
+                if(inp) lineTypeTd.textContent = inp.value;
+            }
+            
+            const amountTd = tr.children[2];
+            if(amountTd){
+                const inp = amountTd.querySelector('input[data-field="amount"]');
+                if(inp) amountTd.textContent = inp.value;
+            }
+            
+            const descTd = tr.children[3];
+            if(descTd){
+                const inp = descTd.querySelector('input[data-field="description"]');
+                if(inp) descTd.textContent = inp.value;
+            }
+            
+            tr.classList.remove('editable');
+        }
+    }
+}
+
+    function convertHdrRowForEdit(hdrRow, enable){
+      const cell = hdrRow.querySelector('td.hdr-cell');
+      if(!cell) return;
+      const row = cell.querySelector('tr[data-hdr]');
+      if(!row) return;
+      if(enable){
+        row.querySelectorAll('td[data-field]').forEach(td=>{
+          const fld = td.getAttribute('data-field');
+          if(td.querySelector('input.inline')) return;
+          const val = td.textContent.trim();
+          td.innerHTML = `<input class="inline" data-field="${fld}" value="${escapeHtml(val)}">`;
+        });
+        cell.classList.add('editable');
+      } else {
+        row.querySelectorAll('td[data-field]').forEach(td=>{
+          const fld = td.getAttribute('data-field');
+          const inp = td.querySelector(`input[data-field="${fld}"]`);
+          if(inp) td.textContent = inp.value;
+        });
+        cell.classList.remove('editable');
+      }
+    }
+
+    async function loadLinesForRow(invoiceNumber, uidLines, linesBtn){
+      const spacer = document.getElementById(uidLines);
+      if(!spacer) return;
+      const cell = spacer.querySelector('td.lines-cell');
+      cell.innerHTML = '<div class="small-muted">Loading lines…</div>';
+      try {
+        const res = await fetch(`${apiRoot}/api/invoice/${encodeURIComponent(invoiceNumber)}`);
+        if(!res.ok){ const txt = await res.text(); cell.innerHTML = `<div style="color:#c00">Error loading lines (${res.status})</div>`; console.error('API error', res.status, txt); if(linesBtn) { linesBtn.innerHTML='›'; linesBtn.setAttribute('aria-expanded','false'); spacer.dataset.open="false"; } return; }
+        const j = await res.json();
+        const lines = j.lines || [];
+        if(!lines.length){ cell.innerHTML = `<div class="small-muted">No line items found</div>`; if(linesBtn) { linesBtn.innerHTML='›'; linesBtn.setAttribute('aria-expanded','false'); spacer.dataset.open="false"; } return; }
+
+        const inner = document.createElement('table');
+        inner.className = 'lines-table';
+        inner.innerHTML = `<thead><tr><th style="width:60px">Line #</th><th>Line Type</th><th style="text-align:right">Line Amt</th><th>Description</th></tr></thead>`;
+        const tb = document.createElement('tbody');
+        for(const ln of lines){
+          const lnNo = ln.line_number ?? ln.line_no ?? '';
+          const lnType = ln.line_type ?? (ln.line_types && (Array.isArray(ln.line_types) ? ln.line_types.join(', ') : ln.line_types)) ?? '';
+          const lnAmount = (ln.amount ?? ln.line_amount ?? ln.inv_amount ?? '');
+          const desc = ln.description ?? ln.item_description ?? '';
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${escapeHtml(lnNo)}</td><td>${escapeHtml(lnType)}</td><td style="text-align:right">${escapeHtml(formatAmount(lnAmount))}</td><td>${escapeHtml(desc)}</td>`;
+          tb.appendChild(row);
+        }
+        inner.appendChild(tb);
+        cell.innerHTML = '';
+        cell.appendChild(inner);
+        if(linesBtn) {
+          linesBtn.innerHTML = '▾';
+          linesBtn.setAttribute('aria-expanded','true');
+        }
+        spacer.dataset.open = "true";
+
+        if(isEditing) convertLinesTableForEdit(inner, true);
+      } catch(err){
+        console.error(err);
+        cell.innerHTML = `<div style="color:#c00">Unexpected error loading lines</div>`;
+        if(linesBtn) { linesBtn.innerHTML = '›'; linesBtn.setAttribute('aria-expanded','false'); spacer.dataset.open="false"; }
+      }
+    }
+
+    function toggleHeader(uid, btn){
+      const hdrRow = document.getElementById(uid);
+      if(!hdrRow) return;
+      const isOpen = hdrRow.dataset.open === "true";
+      if(isOpen){
+        hdrRow.style.display = "none";
+        hdrRow.dataset.open = "false";
+        btn.innerHTML = '›';
+        btn.setAttribute('aria-expanded','false');
+        if(isEditing) convertHdrRowForEdit(hdrRow, false);
+      } else {
+        populateHeaderRowFromButton(hdrRow, btn);
+        hdrRow.style.display = "";
+        hdrRow.dataset.open = "true";
+        btn.innerHTML = '▾';
+        btn.setAttribute('aria-expanded','true');
+        if(isEditing) convertHdrRowForEdit(hdrRow, true);
+      }
+    }
+
+    async function toggleLines(invoiceNumber, uid, btn){
+      const spacer = document.getElementById(uid);
+      if(!spacer) return;
+      const isOpen = spacer.dataset.open === "true";
+      if(isOpen){
+        spacer.style.display = "none";
+        spacer.dataset.open = "false";
+        btn.innerHTML = '›';
+        btn.setAttribute('aria-expanded','false');
+      } else {
+        spacer.style.display = "";
+        spacer.dataset.open = "true";
+        btn.innerHTML = '▾';
+        btn.setAttribute('aria-expanded','true');
+        await loadLinesForRow(invoiceNumber, uid, btn);
+      }
+    }
+
+    function applyFilters(){
+      const sel = dateFilter.selected;
+
+      Array.from(tbody.querySelectorAll("tr.header-row")).forEach(tr=>{
+        const matchText = true;
+        const rowDate = tr.dataset.date || '';
+        const matchDate = !sel || rowDate.startsWith(sel);
+
+        const visible = matchText && matchDate;
+        tr.style.display = visible ? "" : "none";
+
+        const next1 = tr.nextElementSibling;
+        const next2 = next1 ? next1.nextElementSibling : null;
+        if (next1 && next1.classList.contains('hdr-row')) next1.style.display = (visible ? (next1.dataset.open === "true" ? "" : "none") : 'none');
+        if (next2 && next2.classList.contains('line-row')) next2.style.display = (visible ? (next2.dataset.open === "true" ? "" : "none") : 'none');
+      });
+
+      if(dateFilter.selected) dateFilterIcon.classList.add('active'); else dateFilterIcon.classList.remove('active');
+      
+      // Update checkbox states after filtering
+      updateCheckboxStates();
+    }
+
+    // date filter popup helpers
+    function showDateFilterPopup(){
+      const iconRect = dateFilterIcon.getBoundingClientRect();
+      const containerRect = leftPane.getBoundingClientRect();
+      const left = Math.max(8, iconRect.left - containerRect.left - 12);
+      const top = iconRect.bottom - containerRect.top + 8;
+      dateFilterPopup.style.left = left + 'px';
+      dateFilterPopup.style.top = top + 'px';
+      dateFilterPopup.style.display = '';
+      dateFilterPopup.setAttribute('aria-hidden','false');
+
+      dateSearch.value = dateFilter.selected || '';
+      if(dateFilter.selected && /^\d{4}-\d{2}-\d{2}$/.test(dateFilter.selected)){
+        const y = dateFilter.selected.slice(0,4);
+        const m = dateFilter.selected.slice(5,7);
+        const d = dateFilter.selected.slice(8,10);
+        yearSelect.value = y;
+        populateMonthsForYear(y);
+        monthSelect.value = m;
+        populateDaysForYearMonth(`${y}-${m}`);
+        daySelect.value = d;
+      } else if(dateFilter.selected && /^\d{4}-\d{2}$/.test(dateFilter.selected)){
+        const y = dateFilter.selected.slice(0,4);
+        const m = dateFilter.selected.slice(5,7);
+        yearSelect.value = y;
+        populateMonthsForYear(y);
+        monthSelect.value = m;
+        daySelect.innerHTML = '<option value="">Day</option>';
+      } else if(dateFilter.selected && /^\d{4}$/.test(dateFilter.selected)){
+        yearSelect.value = dateFilter.selected;
+        populateMonthsForYear(dateFilter.selected);
+        monthSelect.innerHTML = '<option value="">Month</option>';
+        daySelect.innerHTML = '<option value="">Day</option>';
+      } else {
+        yearSelect.value = '';
+        monthSelect.innerHTML = '<option value="">Month</option>';
+        daySelect.innerHTML = '<option value="">Day</option>';
+      }
+
+      dateSearch.focus();
+      window.addEventListener('pointerdown', onOutsidePointer, { capture: true });
+    }
+
+    function hideDateFilterPopup(){
+      dateFilterPopup.style.display = 'none';
+      dateFilterPopup.setAttribute('aria-hidden','true');
+      window.removeEventListener('pointerdown', onOutsidePointer, { capture: true });
+    }
+
+    function onOutsidePointer(ev){
+      const tgt = ev.target;
+      if(!dateFilterPopup.contains(tgt) && tgt !== dateFilterIcon){
+        hideDateFilterPopup();
+      }
+    }
+
+    dateFilterIcon.addEventListener('click', (e)=>{
+      if(dateFilterPopup.style.display === 'none' || dateFilterPopup.style.display === ''){
+        showDateFilterPopup();
+      } else {
+        hideDateFilterPopup();
+      }
+    });
+    dateFilterIcon.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dateFilterIcon.click(); }
+    });
+
+    dateSearch.addEventListener('input', () => {
+      const v = dateSearch.value.trim();
+      dateFilter.selected = v === '' ? null : v;
+      if(v) { yearSelect.value=''; monthSelect.innerHTML='<option value=\"\">Month</option>'; daySelect.innerHTML='<option value=\"\">Day</option>'; }
+      applyFilters();
+    });
+
+    yearSelect.addEventListener('change', ()=>{
+      const y = yearSelect.value || '';
+      if(!y){
+        dateFilter.selected = dateSearch.value.trim() || null;
+        monthSelect.innerHTML = '<option value="">Month</option>';
+        daySelect.innerHTML = '<option value="">Day</option>';
+      } else {
+        populateMonthsForYear(y);
+        dateFilter.selected = y;
+        dateSearch.value = '';
+      }
+      applyFilters();
+    });
+
+    monthSelect.addEventListener('change', ()=>{
+      const y = yearSelect.value;
+      const m = monthSelect.value;
+      if(!y || !m){
+        dateFilter.selected = yearSelect.value || null;
+        daySelect.innerHTML = '<option value="">Day</option>';
+      } else {
+        populateDaysForYearMonth(`${y}-${m}`);
+        dateFilter.selected = `${y}-${m}`;
+        dateSearch.value = '';
+      }
+      applyFilters();
+    });
+
+    daySelect.addEventListener('change', ()=>{
+      const y = yearSelect.value;
+      const m = monthSelect.value;
+      const d = daySelect.value;
+      if(!y || !m || !d){
+        dateFilter.selected = (y && m) ? `${y}-${m}` : (y ? y : null);
+      } else {
+        dateFilter.selected = `${y}-${m}-${d}`;
+        dateSearch.value = '';
+      }
+      applyFilters();
+    });
+
+    btnDateApply.addEventListener('click', ()=>{
+      hideDateFilterPopup();
+      applyFilters();
+    });
+
+    btnDateClear.addEventListener('click', ()=>{
+      dateFilter.selected = null;
+      dateSearch.value = '';
+      yearSelect.value = '';
+      monthSelect.innerHTML = '<option value="">Month</option>';
+      daySelect.innerHTML = '<option value="">Day</option>';
+      hideDateFilterPopup();
+      applyFilters();
+    });
+
+    // ----- click delegation -----
+    tbody.addEventListener('click', async (ev)=>{
+      const link = ev.target.closest('.invoice-link');
+      if(link){ 
+        const inv = decodeURIComponent(link.dataset.inv||""); 
+        if(inv) {
+          setEditingInvoice(inv); // 🔥 NEW: Track which invoice is being edited
+          openInvoice(inv); 
+        }
+        return; 
+      }
+
+      const hdrBtn = ev.target.closest('.btn-headers');
+      if(hdrBtn){
+        const uid = hdrBtn.dataset.uid;
+        if(!uid) return;
+        toggleHeader(uid, hdrBtn);
+        return;
+      }
+
+      const btn = ev.target.closest('.btn-expand');
+      if(btn){
+        const invoiceNumber = decodeURIComponent(btn.dataset.inv || "");
+        const uid = btn.dataset.uid;
+        if(!invoiceNumber || !uid) return;
+        await toggleLines(invoiceNumber, uid, btn);
+        return;
+      }
+    });
+
+    // 🔥 NEW: Track when user focuses on input fields
+    document.addEventListener('focusin', (ev) => {
+      if (ev.target.classList.contains('inline')) {
+        const row = ev.target.closest('tr.header-row');
+        if (row) {
+          setEditingInvoice(row.dataset.invoice);
+        }
+      }
+    }, true);
+
+    async function openInvoice(invoiceNumber) {
+      const viewerTitle = document.getElementById('viewerTitle');
+      viewerTitle.textContent = '';
+      imageWrap.innerHTML = '<div class="spinner"></div>';
+
+      try {
+        const res = await fetch(`${apiRoot}/api/invoice/${encodeURIComponent(invoiceNumber)}`);
+        if (!res.ok) {
+          const txt = await res.text().catch(()=>null);
+          imageWrap.innerHTML = `<div style="color:#c00;padding:1rem">Error loading invoice (${res.status})</div>`;
+          console.error('API error', res.status, txt);
+          return;
+        }
+
+        const j = await res.json();
+        const doc = j.document || null;
+
+        if (doc) {
+          if (doc.inline_base64 && doc.content_type) {
+            const mime = doc.content_type;
+            const dataUrl = `data:${mime};base64,${doc.inline_base64}`;
+            if (mime.includes('pdf')) {
+              imageWrap.innerHTML = `<iframe src="${dataUrl}"></iframe>`;
+            } else if (mime.startsWith('image/')) {
+              imageWrap.innerHTML = `<img src="${dataUrl}" style="max-width:100%;max-height:100%;display:block;margin:auto" />`;
+            } else {
+              imageWrap.innerHTML = `<div style="padding:1rem"><a href="${dataUrl}" target="_blank">Open document</a></div>`;
+            }
+            captureSnapshot(true);
+            return;
+          }
+
+          if (doc.document_url_by_id) {
+            const mime = doc.content_type || '';
+            if (mime.includes('pdf') || doc.document_url_by_id.toLowerCase().endsWith('.pdf')) {
+              imageWrap.innerHTML = `<iframe src="${doc.document_url_by_id}"></iframe>`;
+            } else if (mime.startsWith('image/') || doc.document_url_by_id.match(/\.(png|jpe?g|gif|bmp)(\?.*)?$/i)) {
+              imageWrap.innerHTML = `<img src="${doc.document_url_by_id}" style="max-width:100%;max-height:100%;display:block;margin:auto" />`;
+            } else {
+              imageWrap.innerHTML = `<div style="padding:1rem"><a href="${doc.document_url_by_id}" target="_blank">Open document</a></div>`;
+            }
+            captureSnapshot(true);
+            return;
+          }
+
+          if (doc.document_url_fallback) {
+            const name = (doc.document_name || '').toLowerCase();
+            if (name.endsWith('.pdf') || doc.document_url_fallback.toLowerCase().endsWith('.pdf')) {
+              imageWrap.innerHTML = `<iframe src="${doc.document_url_fallback}"></iframe>`;
+            } else if (name.match(/\.(png|jpe?g|gif|bmp)$/i) || doc.document_url_fallback.match(/\.(png|jpe?g|gif|bmp)(\?.*)?$/i)) {
+              imageWrap.innerHTML = `<img src="${doc.document_url_fallback}" style="max-width:100%;max-height:100%;display:block;margin:auto" />`;
+            } else {
+              imageWrap.innerHTML = `<div style="padding:1rem"><a href="${doc.document_url_fallback}" target="_blank">Open document</a></div>`;
+            }
+            captureSnapshot(true);
+            return;
+          }
+        }
+
+        imageWrap.innerHTML = `<div style="padding:2rem; text-align:center; color:var(--muted);">No document matched for this invoice.</div>`;
+      } catch (err) {
+        console.error(err);
+        imageWrap.innerHTML = `<div style="color:#c00;padding:1rem">Unexpected error loading invoice</div>`;
+      }
+    }
+
+    /************************************************************************
+     * Robust edit/save/redo message handling - guarded setEditMode + exposure
+     ************************************************************************/
+    function setEditMode(enabled, opts = {}) {
+      try {
+        enabled = !!enabled;
+        if (isEditing === enabled) {
+          if (!opts.suppressSnapshot) captureSnapshot(true);
+          return;
+        }
+
+        isEditing = enabled;
+
+        // 🔥 NEW: If turning ON edit mode, set the first visible row as editing target
+        if (enabled) {
+          const firstVisibleRow = document.querySelector('tr.header-row:not([style*="display: none"])');
+          if (firstVisibleRow) {
+            const invoiceNumber = firstVisibleRow.dataset.invoice;
+            setEditingInvoice(invoiceNumber);
+          }
+        } else {
+          // When turning OFF edit mode, clear editing state
+          setEditingInvoice(null);
+        }
+
+        // toggle inputs for main header rows - PRESERVE CHECKBOXES
+        document.querySelectorAll('tr.header-row').forEach(tr => {
+          tr.querySelectorAll('td').forEach(td => {
+            // 🔥 FIX: Skip checkbox cells and other special cells
+            if (td.classList.contains('checkbox-cell') || 
+                td.classList.contains('cell-sno') || 
+                td.classList.contains('cell-inv') || 
+                td.classList.contains('center')) {
+              return;
+            }
+            
+            const field = td.getAttribute('data-field') || '';
+            if (isEditing) {
+              if (!td.querySelector('input.inline')) {
+                const text = td.textContent.trim();
+                td.innerHTML = `<input class="inline" data-field="${field}" value="${escapeHtml(text)}">`;
+              }
+              td.classList.add('editable');
+            } else {
+              const inp = td.querySelector('input.inline');
+              if (inp) td.textContent = inp.value;
+              td.classList.remove('editable');
+            }
+          });
+        });
+
+        // hdr rows
+        document.querySelectorAll('tr.hdr-row').forEach(hdr => {
+          if (hdr.dataset.open === "true") {
+            if (typeof convertHdrRowForEdit === 'function') convertHdrRowForEdit(hdr, isEditing);
+          }
+        });
+
+        // line rows
+        document.querySelectorAll('tr.line-row').forEach(r => {
+          if (r.dataset.open === "true") {
+            const tbl = r.querySelector('table.lines-table');
+            if (tbl && typeof convertLinesTableForEdit === 'function') convertLinesTableForEdit(tbl, isEditing);
+          }
+        });
+
+        // put attribute for CSS hooks if needed
+        document.documentElement.setAttribute('data-editing', isEditing ? 'true' : 'false');
+
+        // Update checkbox states when switching modes
+        updateCheckboxStates();
+
+        if (!opts.suppressSnapshot) captureSnapshot(true);
+
+        // attempt to notify parent (best-effort)
+        try {
+          window.parent.postMessage({ type: 'INVOICE_RESPONSE', status: 'ok', cmd: 'edit', editing: isEditing, message: isEditing ? 'Edit enabled' : 'Edit disabled' }, '*');
+        } catch (e) { /* ignore cross-origin */ }
+
+      } catch (err) {
+        console.error('setEditMode error', err);
+        try { window.parent.postMessage({ type: 'INVOICE_RESPONSE', status: 'error', cmd: 'edit', message: String(err) }, '*'); } catch(e){}
+      }
+    }
+
+    // 🔥 FIXED: Enhanced collectAllEdits function - only targets the currently edited invoice
+// 🔥 FIXED: Enhanced collectAllEdits function - only targets the currently edited invoice
+// 🔥 FIXED: Enhanced collectAllEdits function - only targets the currently edited invoice
+function collectAllEdits() {
+    const header_changes = {};
+    const line_changes = {};
+    let invoice_number = '';
+
+    // 🔥 FIX: Only collect edits if we're actually editing a specific invoice
+    if (currentEditingInvoice) {
+        // Use the invoice that's currently being edited
+        invoice_number = currentEditingInvoice;
+        console.log(`🎯 Collecting edits for actively edited invoice: ${invoice_number}`);
+    } else {
+        // Fallback: check if any row has pending changes
+        const pendingRow = document.querySelector('tr.header-row.has-pending-changes');
+        if (pendingRow) {
+            invoice_number = pendingRow.dataset.invoice;
+            console.log(`📝 Collecting edits for invoice with pending changes: ${invoice_number}`);
+        } else {
+            // Only use selected checkboxes - DO NOT auto-select first visible row
+            const selectedCheckboxes = document.querySelectorAll('.bulk-checkbox:checked');
+            if (selectedCheckboxes.length > 0) {
+                const firstSelected = selectedCheckboxes[0];
+                invoice_number = firstSelected.dataset.invoice;
+                console.log(`📦 Collecting edits for selected invoice: ${invoice_number}`);
+            } else {
+                console.warn("❌ No invoice selected or being edited for save");
+                alert('❌ Please select or edit an invoice before saving.');
+                return { invoice_number: '', header_changes: {}, line_changes: {} };
+            }
+        }
+    }
+
+    if (!invoice_number) {
+        console.error("❌ Could not determine invoice number for save");
+        alert('❌ Please select or edit an invoice before saving.');
+        return { invoice_number: '', header_changes: {}, line_changes: {} };
+    }
+
+    console.log(`💾 Collecting edits specifically for invoice: ${invoice_number}`);
+
+    // 🔥 FIX: Only collect from the target invoice row
+    const targetRow = document.querySelector(`tr.header-row[data-invoice="${invoice_number}"]`);
+    if (!targetRow) {
+        console.error(`❌ Target row not found for invoice: ${invoice_number}`);
+        return { invoice_number: '', header_changes: {}, line_changes: {} };
+    }
+
+    // Collect header changes only from target row
+    const fields = ['supplier_name', 'invoice_amount', 'invoice_date', 'supplier_site', 'invoice_type', 'payment_terms', 'business_unit', 'supplier_number'];
+    fields.forEach(field => {
+        const td = targetRow.querySelector(`td[data-field="${field}"]`);
+        if(td) {
+            const inp = td.querySelector('input.inline');
+            if(inp) {
+                const currentValue = inp.value.trim();
+                // Only include if value has changed from original (non-empty)
+                if (currentValue !== '') {
+                    header_changes[field] = currentValue;
+                }
+            }
+        }
+    });
+
+    // Collect header row changes (additional fields) - only from target invoice
+    const hdrRow = targetRow.nextElementSibling;
+    if(hdrRow && hdrRow.classList.contains('hdr-row') && hdrRow.dataset.open === "true"){
+        const inputs = hdrRow.querySelectorAll('input.inline');
+        inputs.forEach(inp => {
+            const field = inp.getAttribute('data-field');
+            const currentValue = inp.value.trim();
+            if (currentValue !== '') {
+                header_changes[field] = currentValue;
+            }
+        });
+    }
+
+    // 🔥 FIXED: Collect line changes - properly capture ALL line fields
+    const lineRow = hdrRow ? hdrRow.nextElementSibling : null;
+    if(lineRow && lineRow.classList.contains('line-row') && lineRow.dataset.open === "true"){
+        const tbl = lineRow.querySelector('table.lines-table');
+        if(tbl) {
+            const trs = tbl.querySelectorAll('tbody tr');
+            console.log(`🔍 Found ${trs.length} line rows for collection`);
+            
+            for(const tr of trs){
+                if(tr.querySelector('th') || tr.hasAttribute('data-header')) continue;
+                
+                // Get line number from first cell
+                const lineNoCell = tr.children[0];
+                const lineNo = lineNoCell ? lineNoCell.textContent.trim() : '';
+                if(!lineNo) {
+                    console.log('⚠️ Skipping row - no line number found');
+                    continue;
+                }
+                
+                console.log(`🔍 Processing line ${lineNo}`);
+                
+                // Get ALL line fields
+                const lineTypeCell = tr.children[1];
+                const amountCell = tr.children[2];
+                const descCell = tr.children[3];
+                
+                // Check for inputs in each field
+                const lineTypeInp = lineTypeCell ? lineTypeCell.querySelector('input.inline[data-field="line_type"]') : null;
+                const amountInp = amountCell ? amountCell.querySelector('input.inline[data-field="amount"]') : null;
+                const descInp = descCell ? descCell.querySelector('input.inline[data-field="description"]') : null;
+                
+                console.log(`📝 Line ${lineNo} inputs found:`, {
+                    lineType: !!lineTypeInp,
+                    amount: !!amountInp,
+                    description: !!descInp
+                });
+                
+                // Collect changes for this line
+                const lineChanges = {};
+                
+                if(lineTypeInp && lineTypeInp.value.trim() !== '') {
+                    lineChanges['line_type'] = lineTypeInp.value.trim();
+                    console.log(`📝 Line ${lineNo} type changed to: ${lineTypeInp.value.trim()}`);
+                }
+                if(amountInp && amountInp.value.trim() !== '') {
+                    lineChanges['amount'] = amountInp.value.trim().replace(/,/g,'');
+                    console.log(`📝 Line ${lineNo} amount changed to: ${amountInp.value.trim()}`);
+                }
+                if(descInp && descInp.value.trim() !== '') {
+                    lineChanges['description'] = descInp.value.trim();
+                    console.log(`📝 Line ${lineNo} description changed to: ${descInp.value.trim()}`);
+                }
+                
+                // Only add if there are actual changes
+                if(Object.keys(lineChanges).length > 0) {
+                    line_changes[lineNo] = lineChanges;
+                    console.log(`✅ Added changes for line ${lineNo}:`, lineChanges);
+                } else {
+                    console.log(`ℹ️ No changes detected for line ${lineNo}`);
+                }
+            }
+        } else {
+            console.log('❌ No lines table found in line row');
+        }
+    } else {
+        console.log('ℹ️ Line row not open or not found for invoice:', invoice_number);
+    }
+
+    console.log(`📦 FINAL Collected changes for ${invoice_number}:`, { 
+        header_changes, 
+        line_changes,
+        header_count: Object.keys(header_changes).length,
+        line_count: Object.keys(line_changes).length
+    });
+    
+    return {
+        invoice_number,
+        header_changes,
+        line_changes
+    };
+}
+
+    // 🔥 UPDATED: Enhanced handleSave function for draft saving
+    async function handleSave(){
+        if(!isEditing){
+            alert('Turn ON edit mode before saving changes.');
+            return;
+        }
+
+        console.log("💾 SAVE BUTTON CLICKED - Using fixed draft save logic");
+
+        // Collect all edits - NOW ONLY FROM THE CORRECT INVOICE
+        const edits = collectAllEdits();
+        
+        if (!edits.invoice_number) {
+            alert('❌ Please select or edit an invoice before saving.');
+            return;
+        }
+
+        console.log(`🎯 Saving changes for invoice: ${edits.invoice_number}`);
+        
+        // 🔥 FIX: Store current UI state before saving
+        const currentEditState = isEditing;
+        const currentOpenRows = getCurrentlyOpenRows();
+        
+        try {
+            // Save to history tables as draft first
+            const draftResponse = await fetch(`${apiRoot}/api/workflow/save-draft-changes`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    invoice_number: edits.invoice_number,
+                    header_changes: edits.header_changes,
+                    line_changes: edits.line_changes,
+                    editor_email: 'patilmrudula033@gmail.com'
+                })
+            });
+
+            const draftResult = await draftResponse.json();
+            
+            if (draftResult.success) {
+                alert('✅ Draft changes saved successfully! Click "Submit" to send for approval.');
+                
+                // 🔥 FIX: Don't turn off edit mode completely
+                // setEditMode(false); // ❌ REMOVED THIS LINE
+                
+                // 🔥 FIX: Instead of full refresh, just update the status
+                updateInvoiceStatus(edits.invoice_number, 'draft');
+                
+                // 🔥 FIX: Restore edit state and open rows
+                setEditMode(currentEditState);
+                restoreOpenRows(currentOpenRows);
+                
+                // Notify React parent
+                try {
+                    window.parent.postMessage({ 
+                        type: 'INVOICE_RESPONSE', 
+                        status: 'ok', 
+                        cmd: 'save', 
+                        message: 'Draft changes saved successfully',
+                        draft_saved: true,
+                        invoice_number: edits.invoice_number
+                    }, '*');
+                } catch(e) { /* ignore */ }
+                
+            } else {
+                alert('❌ Failed to save draft: ' + draftResult.error);
+                // Restore edit state on failure too
+                setEditMode(currentEditState);
+                restoreOpenRows(currentOpenRows);
+            }
+            
+        } catch(err) {
+            console.error('Save error', err);
+            alert('Error saving: ' + (err.message || err));
+            // Restore edit state on error too
+            setEditMode(currentEditState);
+            restoreOpenRows(currentOpenRows);
+        }
+    }
+
+    // 🔥 NEW: Helper to get currently open rows
+    function getCurrentlyOpenRows() {
+        const openRows = {
+            headers: [],
+            lines: []
+        };
+        
+        document.querySelectorAll('tr.hdr-row[data-open="true"]').forEach(row => {
+            openRows.headers.push(row.id);
+        });
+        
+        document.querySelectorAll('tr.line-row[data-open="true"]').forEach(row => {
+            openRows.lines.push(row.id);
+        });
+        
+        return openRows;
+    }
+
+    // 🔥 NEW: Helper to restore open rows
+    function restoreOpenRows(openRows) {
+        openRows.headers.forEach(id => {
+            const row = document.getElementById(id);
+            if (row) {
+                row.style.display = "";
+                row.dataset.open = "true";
+                // Also update the button state
+                const btn = document.querySelector(`button[data-uid="${id}"]`);
+                if (btn) {
+                    btn.innerHTML = '▾';
+                    btn.setAttribute('aria-expanded','true');
+                }
+            }
+        });
+        
+        openRows.lines.forEach(id => {
+            const row = document.getElementById(id);
+            if (row) {
+                row.style.display = "";
+                row.dataset.open = "true";
+                // Also update the button state
+                const btn = document.querySelector(`button[data-uid="${id}"]`);
+                if (btn) {
+                    btn.innerHTML = '▾';
+                    btn.setAttribute('aria-expanded','true');
+                }
+            }
+        });
+    }
+
+    // 🔥 NEW: Update just the status without full refresh
+    function updateInvoiceStatus(invoiceNumber, newStatus) {
+        const row = document.querySelector(`tr.header-row[data-invoice="${invoiceNumber}"]`);
+        if (row) {
+            const statusCell = row.querySelector('td:last-child');
+            if (statusCell) {
+                statusCell.innerHTML = getStatusDisplay(newStatus);
+            }
+            
+            // Update checkbox state
+            const checkbox = row.querySelector('.bulk-checkbox');
+            if (checkbox) {
+                if (newStatus === 'draft') {
+                    checkbox.disabled = false;
+                    checkbox.title = 'Select for bulk submission';
+                } else {
+                    checkbox.disabled = true;
+                    checkbox.title = 'Cannot select - already submitted or approved';
+                    if (checkbox.checked) {
+                        checkbox.checked = false;
+                        selectedInvoices.delete(invoiceNumber);
+                    }
+                }
+            }
+        }
+        updateSelectionUI();
+    }
+
+    // 🔥 UPDATED: Enhanced message listener with submit command
+    window.addEventListener('message', (event) => {
+      const data = event.data || {};
+      if(data.type !== 'INVOICE_CMD') return;
+      const cmd = data.cmd;
+      const payload = data.payload || {};
+
+      switch(cmd){
+        case 'handshake':
+          try { window.parent.postMessage({ type: 'INVOICE_RESPONSE', status: 'ok', cmd: 'handshake' }, '*'); } catch(e){}
+          break;
+        case 'edit':
+          const enable = (typeof payload.enable === 'boolean') ? payload.enable : !isEditing;
+          setEditMode(enable);
+          break;
+        case 'save':
+          if (typeof handleSave === 'function') {
+            Promise.resolve().then(() => handleSave())
+              .then(()=> { 
+                try{ window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'ok', cmd:'save', message:'Draft saved successfully' }, '*'); }catch(e){} 
+              })
+              .catch(err => { 
+                try{ window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'error', cmd:'save', message:String(err) }, '*'); }catch(e){} 
+              });
+          }
+          break;
+       
+        // 🔥 ADD THIS NEW CASE for submit command
+        case 'submit':
+          if (typeof handleBulkSubmit === 'function') {
+            Promise.resolve().then(() => handleBulkSubmit())
+              .then(()=> { 
+               /* try{ window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'ok', cmd:'submit', message:'Bulk submit completed' }, '*'); }catch(e){} */
+              })
+              .catch(err => { 
+               /* try{ window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'error', cmd:'submit', message:String(err) }, '*'); }catch(e){} */
+              });
+          }
+          break;
+        case 'redo':
+          try { doRedo(); window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'ok', cmd:'redo' }, '*'); } catch(err){ try{window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'error', cmd:'redo', message:String(err) }, '*'); }catch(e){} }
+          break;
+        case 'undo':
+          try { doUndo(); window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'ok', cmd:'undo' }, '*'); } catch(err){ try{window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'error', cmd:'undo', message:String(err) }, '*'); }catch(e){} }
+          break;
+        case 'refresh':
+          try { loadInvoices(); window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'ok', cmd:'refresh' }, '*'); } catch(err){ try{window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'error', cmd:'refresh', message:String(err) }, '*'); }catch(e){} }
+          break;
+        case 'search':
+          try { 
+            const query = payload.query || '';
+            window.applyKeywordSearch(query); 
+            window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'ok', cmd:'search' }, '*'); 
+          } catch(err){ 
+            try{window.parent.postMessage({ type:'INVOICE_RESPONSE', status:'error', cmd:'search', message:String(err) }, '*'); }catch(e){} 
+          }
+          break;
+      }
+    });
+
+    // REMOVED: Toolbar button event listeners since toolbar is deleted
+
+    // expose functions on window for same-origin direct calls
+    window.saveInvoice = handleSave;
+    window.setEditMode = setEditMode;
+    window.doRedo = doRedo;
+    window.doUndo = doUndo;
+    window.refreshInvoices = () => { collapseAllDetails(); loadInvoices(); };
+    window.handleBulkSubmit = handleBulkSubmit;
+    window.toggleInvoiceSelection = toggleInvoiceSelection;
+    window.applyKeywordSearch = window.applyKeywordSearch; // Already exposed
+
+    // Initialize - ONLY load invoices once
+    loadInvoices();
+  </script>
+</body>
+</html>

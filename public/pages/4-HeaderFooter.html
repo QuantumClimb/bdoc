@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#FCD34D',
+              dark: '#1F2937',
+              darker: '#111827'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1F2937;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #FCD34D;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #F59E0B;
+      }
+      .icon-glow {
+        transition: all 0.3s ease;
+      }
+      .icon-glow:hover {
+        color: #FCD34D;
+        filter: drop-shadow(0 0 8px rgba(252, 211, 77, 0.8));
+        transform: scale(1.1);
+      }
+      .header-glass {
+        background: rgba(31, 41, 55, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(252, 211, 77, 0.1);
+      }
+      .footer-glass {
+        background: rgba(31, 41, 55, 0.8);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(252, 211, 77, 0.1);
+      }
+    </style>
+</head>
+<body class="bg-darker min-h-screen flex flex-col">
+    <header id="header" class="header-glass fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-12">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                            <i class="bi bi-file-earmark-text text-darker text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-white tracking-tight">BDoc</span>
+                    </div>
+                    
+                    <nav class="hidden lg:flex items-center space-x-8">
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-speedometer2 text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Dashboard</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-file-earmark-text text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Document</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-arrow-clockwise text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Redo</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-arrow-counterclockwise text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Undo</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-download text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Download</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-upload text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Import</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-search text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Search</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-6">
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <i class="bi bi-box-arrow-right text-2xl icon-glow"></i>
+                    </button>
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <i class="bi bi-gear text-2xl icon-glow"></i>
+                    </button>
+                    <button class="flex items-center space-x-2 bg-dark border border-gray-700 rounded-xl px-4 py-2 hover:border-primary transition-all">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Profile" class="w-8 h-8 rounded-lg">
+                        <span class="text-white text-sm font-medium">Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center pt-20 pb-16">
+        <div id="login-container" class="w-full max-w-md px-4">
+            <div id="logo-section" class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4">
+                    <i class="bi bi-file-earmark-text text-darker text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">BDoc</h1>
+                <p class="text-gray-400 text-sm mt-2">Document Management System</p>
+            </div>
+
+            <div id="login-form-container" class="bg-dark rounded-2xl border border-gray-700 p-8 shadow-2xl">
+                <div id="step-indicator" class="flex items-center justify-center mb-8">
+                    <div class="flex items-center space-x-4">
+                        <div id="step-1-indicator" class="flex items-center">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-darker text-sm font-bold">1</div>
+                            <span class="ml-2 text-sm font-medium text-white">Username</span>
+                        </div>
+                        <div class="w-8 h-0.5 bg-gray-600"></div>
+                        <div id="step-2-indicator" class="flex items-center">
+                            <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 text-sm font-bold">2</div>
+                            <span class="ml-2 text-sm font-medium text-gray-400">Password</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-1" class="space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white mb-2">Welcome back</h2>
+                        <p class="text-gray-400 text-sm">Please enter your username to continue</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="bi bi-person text-gray-400 text-lg"></i>
+                                </div>
+                                <input id="username-input" type="text" class="w-full pl-10 pr-4 py-3 bg-darker border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Enter your username">
+                            </div>
+                        </div>
+                        
+                        <button id="continue-btn" class="w-full bg-primary text-darker font-semibold py-3 px-4 rounded-lg hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Continue
+                        </button>
+                    </div>
+                </div>
+
+                <div id="step-2" class="space-y-6 hidden">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <button id="back-btn" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="bi bi-arrow-left text-xl"></i>
+                        </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Enter Password</h2>
+                            <p class="text-gray-400 text-sm">Welcome back, <span id="username-display" class="text-primary font-medium"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="bi bi-lock text-gray-400 text-lg"></i>
+                                </div>
+                                <input id="password-input" type="password" class="w-full pl-10 pr-12 py-3 bg-darker border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Enter your password">
+                                <button id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-primary transition-colors">
+                                    <i class="bi bi-eye text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="w-4 h-4 bg-darker border border-gray-600 rounded text-primary focus:ring-primary focus:ring-offset-dark">
+                                <span class="ml-2 text-sm text-gray-300">Remember me</span>
+                            </label>
+                            <a href="#" class="text-sm text-primary hover:text-yellow-400 transition-colors">Forgot password?</a>
+                        </div>
+                        
+                        <button id="login-btn" class="w-full bg-primary text-darker font-semibold py-3 px-4 rounded-lg hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <span id="login-text">Sign In</span>
+                            <i id="login-spinner" class="bi bi-arrow-repeat animate-spin ml-2 hidden"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400 text-sm">
+                        Don't have an account? 
+                        <a href="#" class="text-primary hover:text-yellow-400 transition-colors font-medium">Contact Administrator</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer" class="footer-glass mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="bi bi-file-earmark-text text-darker text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-bold text-lg">BDoc</div>
+                        <div class="text-gray-400 text-xs">by BAuraTech</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-8">
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">
+                        <i class="bi bi-house-door mr-1"></i>
+                        Homepage
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Support</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                        <i class="bi bi-twitter text-xl icon-glow"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                        <i class="bi bi-linkedin text-xl icon-glow"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                        <i class="bi bi-github text-xl icon-glow"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-700 text-center">
+                <p class="text-gray-500 text-xs">© 2024 BAuraTech. All rights reserved. Powered by BDoc Document Management System.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step1Indicator = document.getElementById('step-1-indicator');
+            const step2Indicator = document.getElementById('step-2-indicator');
+            const usernameInput = document.getElementById('username-input');
+            const passwordInput = document.getElementById('password-input');
+            const continueBtn = document.getElementById('continue-btn');
+            const backBtn = document.getElementById('back-btn');
+            const loginBtn = document.getElementById('login-btn');
+            const usernameDisplay = document.getElementById('username-display');
+            const togglePassword = document.getElementById('toggle-password');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+
+            function updateStepIndicator(currentStep) {
+                if (currentStep === 1) {
+                    step1Indicator.querySelector('div').className = 'w-8 h-8 bg-primary rounded-full flex items-center justify-center text-darker text-sm font-bold';
+                    step1Indicator.querySelector('span').className = 'ml-2 text-sm font-medium text-white';
+                    step2Indicator.querySelector('div').className = 'w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-gray-400 text-sm font-bold';
+                    step2Indicator.querySelector('span').className = 'ml-2 text-sm font-medium text-gray-400';
+                } else {
+                    step1Indicator.querySelector('div').className = 'w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm';
+                    step1Indicator.querySelector('div').innerHTML = '<i class="bi bi-check-lg text-sm"></i>';
+                    step1Indicator.querySelector('span').className = 'ml-2 text-sm font-medium text-green-400';
+                    step2Indicator.querySelector('div').className = 'w-8 h-8 bg-primary rounded-full flex items-center justify-center text-darker text-sm font-bold';
+                    step2Indicator.querySelector('span').className = 'ml-2 text-sm font-medium text-white';
+                }
+            }
+
+            usernameInput.addEventListener('input', function() {
+                continueBtn.disabled = this.value.trim() === '';
+            });
+
+            passwordInput.addEventListener('input', function() {
+                loginBtn.disabled = this.value.trim() === '';
+            });
+
+            continueBtn.addEventListener('click', function() {
+                const username = usernameInput.value.trim();
+                if (username) {
+                    usernameDisplay.textContent = username;
+                    step1.classList.add('hidden');
+                    step2.classList.remove('hidden');
+                    updateStepIndicator(2);
+                    setTimeout(() => passwordInput.focus(), 100);
+                }
+            });
+
+            backBtn.addEventListener('click', function() {
+                step2.classList.add('hidden');
+                step1.classList.remove('hidden');
+                updateStepIndicator(1);
+                passwordInput.value = '';
+                loginBtn.disabled = true;
+                setTimeout(() => usernameInput.focus(), 100);
+            });
+
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="bi bi-eye text-lg"></i>' : '<i class="bi bi-eye-slash text-lg"></i>';
+            });
+
+            loginBtn.addEventListener('click', function() {
+                loginText.textContent = 'Signing In...';
+                loginSpinner.classList.remove('hidden');
+                loginBtn.disabled = true;
+                
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+            });
+
+            usernameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !continueBtn.disabled) {
+                    continueBtn.click();
+                }
+            });
+
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !loginBtn.disabled) {
+                    loginBtn.click();
+                }
+            });
+
+            setTimeout(() => usernameInput.focus(), 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#FCD34D',
+              dark: '#1F2937',
+              darker: '#111827'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1F2937;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #FCD34D;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #F59E0B;
+      }
+      .icon-glow {
+        transition: all 0.3s ease;
+      }
+      .icon-glow:hover {
+        color: #FCD34D;
+        filter: drop-shadow(0 0 8px rgba(252, 211, 77, 0.8));
+        transform: scale(1.1);
+      }
+      .header-glass {
+        background: rgba(31, 41, 55, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(252, 211, 77, 0.1);
+      }
+      .footer-glass {
+        background: rgba(31, 41, 55, 0.8);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(252, 211, 77, 0.1);
+      }
+      .alert-backdrop {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(4px);
+      }
+      .alert-slide-in {
+        animation: slideIn 0.3s ease-out;
+      }
+      .alert-slide-out {
+        animation: slideOut 0.3s ease-in;
+      }
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes slideOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to { opacity: 0; transform: translateY(-20px) scale(0.95); }
+      }
+      .toast-slide-in {
+        animation: toastSlideIn 0.3s ease-out;
+      }
+      @keyframes toastSlideIn {
+        from { opacity: 0; transform: translateX(100%); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+    </style>
+</head>
+<body class="bg-darker min-h-screen flex flex-col">
+    <header id="header" class="header-glass fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-12">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                            <i class="bi bi-file-earmark-text text-darker text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-white tracking-tight">BDoc</span>
+                    </div>
+                    
+                    <nav class="hidden lg:flex items-center space-x-8">
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-speedometer2 text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Dashboard</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-file-earmark-text text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Document</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-arrow-clockwise text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Redo</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-arrow-counterclockwise text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Undo</span>
+                        </a>
+                        <button onclick="showAlert('download')" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-download text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Download</span>
+                        </button>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-upload text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Import</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-search text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Search</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-6">
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <i class="bi bi-box-arrow-right text-2xl icon-glow"></i>
+                    </button>
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <i class="bi bi-gear text-2xl icon-glow"></i>
+                    </button>
+                    <button class="flex items-center space-x-2 bg-dark border border-gray-700 rounded-xl px-4 py-2 hover:border-primary transition-all">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Profile" class="w-8 h-8 rounded-lg">
+                        <span class="text-white text-sm font-medium">Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 pt-20 pb-16">
+        <div id="alert-demo-container" class="max-w-4xl mx-auto px-6 py-12">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-white mb-4">BDoc Alert System</h1>
+                <p class="text-gray-400 text-lg">Interactive alert and notification components for document management</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-dark rounded-xl border border-gray-700 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                            <i class="bi bi-check-lg text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Save Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 mb-6">Document save confirmation and progress alerts</p>
+                    <div class="space-y-3">
+                        <button onclick="showAlert('save')" class="w-full bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded-lg transition-colors">
+                            Show Save Alert
+                        </button>
+                        <button onclick="showToast('save')" class="w-full bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors">
+                            Save Toast
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-dark rounded-xl border border-gray-700 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="bi bi-download text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Download Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 mb-6">File download confirmation and progress</p>
+                    <div class="space-y-3">
+                        <button onclick="showAlert('download')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg transition-colors">
+                            Download Confirm
+                        </button>
+                        <button onclick="showToast('download')" class="w-full bg-blue-700 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors">
+                            Download Toast
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-dark rounded-xl border border-gray-700 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                            <i class="bi bi-trash text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Discard Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 mb-6">Confirm discard actions and warnings</p>
+                    <div class="space-y-3">
+                        <button onclick="showAlert('discard')" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg transition-colors">
+                            Discard Warning
+                        </button>
+                        <button onclick="showToast('discard')" class="w-full bg-red-700 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors">
+                            Discard Toast
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-dark rounded-xl border border-gray-700 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                            <i class="bi bi-arrow-right text-darker text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Continue Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 mb-6">Process continuation confirmations</p>
+                    <div class="space-y-3">
+                        <button onclick="showAlert('continue')" class="w-full bg-primary hover:bg-yellow-400 text-darker py-2 px-4 rounded-lg transition-colors font-semibold">
+                            Continue Dialog
+                        </button>
+                        <button onclick="showToast('continue')" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white py-2 px-4 rounded-lg transition-colors">
+                            Continue Toast
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-dark rounded-xl border border-gray-700 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                            <i class="bi bi-exclamation-triangle text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Warning Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 mb-6">System warnings and error messages</p>
+                    <div class="space-y-3">
+                        <button onclick="showAlert('warning')" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-2 px-4 rounded-lg transition-colors">
+                            Warning Dialog
+                        </button>
+                        <button onclick="showToast('warning')" class="w-full bg-orange-700 hover:bg-orange-600 text-white py-2 px-4 rounded-lg transition-colors">
+                            Warning Toast
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-dark rounded-xl border border-gray-700 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="bi bi-info-circle text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Info Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 mb-6">Information and status updates</p>
+                    <div class="space-y-3">
+                        <button onclick="showAlert('info')" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-lg transition-colors">
+                            Info Dialog
+                        </button>
+                        <button onclick="showToast('info')" class="w-full bg-purple-700 hover:bg-purple-600 text-white py-2 px-4 rounded-lg transition-colors">
+                            Info Toast
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="alert-backdrop" class="fixed inset-0 alert-backdrop z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div id="alert-modal" class="bg-dark rounded-2xl border border-gray-700 shadow-2xl max-w-md w-full alert-slide-in">
+                <div id="alert-content">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed top-24 right-6 z-50 space-y-3">
+    </div>
+
+    <footer id="footer" class="footer-glass mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="bi bi-file-earmark-text text-darker text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-bold text-lg">BDoc</div>
+                        <div class="text-gray-400 text-xs">by BAuraTech</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-8">
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">
+                        <i class="bi bi-house-door mr-1"></i>
+                        Homepage
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Support</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                        <i class="bi bi-twitter text-xl icon-glow"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                        <i class="bi bi-linkedin text-xl icon-glow"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                        <i class="bi bi-github text-xl icon-glow"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-700 text-center">
+                <p class="text-gray-500 text-xs">© 2024 BAuraTech. All rights reserved. Powered by BDoc Document Management System.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const alertTemplates = {
+            save: {
+                icon: '<i class="bi bi-check-circle-fill text-green-500 text-4xl"></i>',
+                title: 'Document Saved',
+                message: 'Your document has been successfully saved to the system.',
+                primaryBtn: { text: 'Continue', class: 'bg-green-600 hover:bg-green-500 text-white' },
+                secondaryBtn: { text: 'View Document', class: 'bg-gray-600 hover:bg-gray-500 text-white' }
+            },
+            download: {
+                icon: '<i class="bi bi-download text-blue-500 text-4xl"></i>',
+                title: 'Download Document',
+                message: 'Are you sure you want to download this document? The file will be saved to your default download location.',
+                primaryBtn: { text: 'Download', class: 'bg-blue-600 hover:bg-blue-500 text-white' },
+                secondaryBtn: { text: 'Cancel', class: 'bg-gray-600 hover:bg-gray-500 text-white' }
+            },
+            discard: {
+                icon: '<i class="bi bi-exclamation-triangle-fill text-red-500 text-4xl"></i>',
+                title: 'Discard Changes',
+                message: 'You have unsaved changes. Are you sure you want to discard them? This action cannot be undone.',
+                primaryBtn: { text: 'Discard', class: 'bg-red-600 hover:bg-red-500 text-white' },
+                secondaryBtn: { text: 'Keep Editing', class: 'bg-gray-600 hover:bg-gray-500 text-white' }
+            },
+            continue: {
+                icon: '<i class="bi bi-arrow-right-circle-fill text-yellow-500 text-4xl"></i>',
+                title: 'Continue Process',
+                message: 'This action will continue the document processing workflow. Do you want to proceed?',
+                primaryBtn: { text: 'Continue', class: 'bg-primary hover:bg-yellow-400 text-darker font-semibold' },
+                secondaryBtn: { text: 'Cancel', class: 'bg-gray-600 hover:bg-gray-500 text-white' }
+            },
+            warning: {
+                icon: '<i class="bi bi-exclamation-triangle-fill text-orange-500 text-4xl"></i>',
+                title: 'Warning',
+                message: 'The document contains potential errors or formatting issues. Please review before proceeding.',
+                primaryBtn: { text: 'Review Document', class: 'bg-orange-600 hover:bg-orange-500 text-white' },
+                secondaryBtn: { text: 'Proceed Anyway', class: 'bg-gray-600 hover:bg-gray-500 text-white' }
+            },
+            info: {
+                icon: '<i class="bi bi-info-circle-fill text-purple-500 text-4xl"></i>',
+                title: 'Information',
+                message: 'Document processing completed successfully. All validations passed and the file is ready for use.',
+                primaryBtn: { text: 'OK', class: 'bg-purple-600 hover:bg-purple-500 text-white' },
+                secondaryBtn: null
+            }
+        };
+
+        const toastTemplates = {
+            save: {
+                icon: '<i class="bi bi-check-circle-fill text-green-400 text-xl"></i>',
+                title: 'Document Saved',
+                message: 'Successfully saved to system',
+                bgClass: 'bg-green-900 border-green-500'
+            },
+            download: {
+                icon: '<i class="bi bi-download text-blue-400 text-xl"></i>',
+                title: 'Download Started',
+                message: 'File download in progress...',
+                bgClass: 'bg-blue-900 border-blue-500'
+            },
+            discard: {
+                icon: '<i class="bi bi-trash text-red-400 text-xl"></i>',
+                title: 'Changes Discarded',
+                message: 'All unsaved changes removed',
+                bgClass: 'bg-red-900 border-red-500'
+            },
+            continue: {
+                icon: '<i class="bi bi-arrow-right-circle text-yellow-400 text-xl"></i>',
+                title: 'Process Continued',
+                message: 'Workflow proceeding...',
+                bgClass: 'bg-yellow-900 border-yellow-500'
+            },
+            warning: {
+                icon: '<i class="bi bi-exclamation-triangle text-orange-400 text-xl"></i>',
+                title: 'Warning',
+                message: 'Please review document',
+                bgClass: 'bg-orange-900 border-orange-500'
+            },
+            info: {
+                icon: '<i class="bi bi-info-circle text-purple-400 text-xl"></i>',
+                title: 'Information',
+                message: 'Process completed successfully',
+                bgClass: 'bg-purple-900 border-purple-500'
+            }
+        };
+
+        function showAlert(type) {
+            const template = alertTemplates[type];
+            const alertContent = document.getElementById('alert-content');
+            
+            alertContent.innerHTML = `
+                <div class="p-8">
+                    <div class="text-center mb-6">
+                        ${template.icon}
+                    </div>
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-white mb-3">${template.title}</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">${template.message}</p>
+                    </div>
+                    <div class="flex ${template.secondaryBtn ? 'space-x-3' : 'justify-center'}">
+                        <button onclick="hideAlert()" class="${template.primaryBtn.class} px-6 py-3 rounded-lg font-medium transition-all ${template.secondaryBtn ? 'flex-1' : 'px-12'}">
+                            ${template.primaryBtn.text}
+                        </button>
+                        ${template.secondaryBtn ? `
+                        <button onclick="hideAlert()" class="${template.secondaryBtn.class} px-6 py-3 rounded-lg font-medium transition-all flex-1">
+                            ${template.secondaryBtn.text}
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('alert-backdrop').classList.remove('hidden');
+            document.getElementById('alert-modal').classList.add('alert-slide-in');
+        }
+
+        function hideAlert() {
+            const modal = document.getElementById('alert-modal');
+            modal.classList.remove('alert-slide-in');
+            modal.classList.add('alert-slide-out');
+            
+            setTimeout(() => {
+                document.getElementById('alert-backdrop').classList.add('hidden');
+                modal.classList.remove('alert-slide-out');
+            }, 300);
+        }
+
+        function showToast(type) {
+            const template = toastTemplates[type];
+            const toastContainer = document.getElementById('toast-container');
+            const toastId = 'toast-' + Date.now();
+            
+            const toastElement = document.createElement('div');
+            toastElement.id = toastId;
+            toastElement.className = `${template.bgClass} border-l-4 rounded-lg p-4 shadow-lg max-w-sm toast-slide-in`;
+            toastElement.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        ${template.icon}
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-white font-semibold text-sm">${template.title}</h4>
+                        <p class="text-gray-300 text-xs mt-1">${template.message}</p>
+                    </div>
+                    <button onclick="hideToast('${toastId}')" class="flex-shrink-0 text-gray-400 hover:text-white transition-colors">
+                        <i class="bi bi-x text-lg"></i>
+                    </button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toastElement);
+            
+            setTimeout(() => {
+                hideToast(toastId);
+            }, 5000);
+        }
+
+        function hideToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.style.animation = 'toastSlideOut 0.3s ease-in forwards';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideAlert();
+            }
+        });
+
+        document.getElementById('alert-backdrop').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideAlert();
+            }
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes toastSlideOut {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(100%); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

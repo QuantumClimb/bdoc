@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#FCD34D',
+              dark: '#1F2937',
+              darker: '#111827'
+            }
+          }
+        }
+      }
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1F2937;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #FCD34D;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #F59E0B;
+      }
+    </style>
+</head>
+<body class="bg-darker">
+    <header id="header" class="bg-dark border-b border-gray-700">
+      <div class="px-6 py-4">
+        <div class="flex justify-between items-center">
+          <h1 class="text-xl font-bold text-white tracking-tight">Analytics Dashboard</h1>
+          <div class="flex items-center space-x-4">
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-bell"></i></button>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-cog"></i></button>
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-darker text-sm font-bold">AD</div>
+              <span class="text-sm text-gray-300 font-medium">Admin User</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="main-content" class="p-6">
+      <div class="mb-6 flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-white mb-1">Monthly Overview</h2>
+          <p class="text-gray-400 text-sm">January 2024 Performance Metrics</p>
+        </div>
+        <div class="flex space-x-3">
+          <button class="px-4 py-2 text-sm bg-darker border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 hover:border-primary transition-all">
+            <i class="fa-solid fa-calendar-days mr-2"></i>Last 30 Days
+          </button>
+          <button class="px-4 py-2 text-sm bg-primary border border-primary rounded-lg text-darker font-semibold hover:bg-yellow-400 transition-all">
+            <i class="fa-solid fa-download mr-2"></i>Export Report
+          </button>
+        </div>
+      </div>
+
+      <div id="stats-cards" class="grid grid-cols-4 gap-6 mb-6">
+        <div class="bg-dark border border-gray-700 rounded-xl p-6 hover:border-primary transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-dollar-sign text-primary text-xl"></i>
+            </div>
+            <span class="text-green-400 text-sm font-semibold"><i class="fa-solid fa-arrow-up mr-1"></i>12.5%</span>
+          </div>
+          <div class="text-gray-400 text-sm mb-1">Total Revenue</div>
+          <div class="text-white text-2xl font-bold">$847,392</div>
+        </div>
+
+        <div class="bg-dark border border-gray-700 rounded-xl p-6 hover:border-primary transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-file-invoice text-primary text-xl"></i>
+            </div>
+            <span class="text-green-400 text-sm font-semibold"><i class="fa-solid fa-arrow-up mr-1"></i>8.3%</span>
+          </div>
+          <div class="text-gray-400 text-sm mb-1">Total Invoices</div>
+          <div class="text-white text-2xl font-bold">1,247</div>
+        </div>
+
+        <div class="bg-dark border border-gray-700 rounded-xl p-6 hover:border-primary transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-check-circle text-primary text-xl"></i>
+            </div>
+            <span class="text-red-400 text-sm font-semibold"><i class="fa-solid fa-arrow-down mr-1"></i>3.2%</span>
+          </div>
+          <div class="text-gray-400 text-sm mb-1">Approved</div>
+          <div class="text-white text-2xl font-bold">892</div>
+        </div>
+
+        <div class="bg-dark border border-gray-700 rounded-xl p-6 hover:border-primary transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-clock text-primary text-xl"></i>
+            </div>
+            <span class="text-yellow-400 text-sm font-semibold"><i class="fa-solid fa-minus mr-1"></i>0.0%</span>
+          </div>
+          <div class="text-gray-400 text-sm mb-1">Pending</div>
+          <div class="text-white text-2xl font-bold">355</div>
+        </div>
+      </div>
+
+      <div id="charts-row-1" class="grid grid-cols-2 gap-6 mb-6">
+        <div id="revenue-chart-card" class="bg-dark border border-gray-700 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Monthly Revenue Trend</h3>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-ellipsis-v"></i></button>
+          </div>
+          <div id="revenue-chart" style="height: 350px;"></div>
+        </div>
+
+        <div id="invoice-chart-card" class="bg-dark border border-gray-700 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Invoice Status Distribution</h3>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-ellipsis-v"></i></button>
+          </div>
+          <div id="invoice-status-chart" style="height: 350px;"></div>
+        </div>
+      </div>
+
+      <div id="charts-row-2" class="grid grid-cols-2 gap-6 mb-6">
+        <div id="supplier-chart-card" class="bg-dark border border-gray-700 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Top Suppliers by Volume</h3>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-ellipsis-v"></i></button>
+          </div>
+          <div id="supplier-chart" style="height: 350px;"></div>
+        </div>
+
+        <div id="payment-chart-card" class="bg-dark border border-gray-700 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Payment Timeline</h3>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-ellipsis-v"></i></button>
+          </div>
+          <div id="payment-timeline-chart" style="height: 350px;"></div>
+        </div>
+      </div>
+
+      <div id="charts-row-3" class="grid grid-cols-3 gap-6">
+        <div id="category-chart-card" class="bg-dark border border-gray-700 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Expense Categories</h3>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-ellipsis-v"></i></button>
+          </div>
+          <div id="category-chart" style="height: 300px;"></div>
+        </div>
+
+        <div id="approval-chart-card" class="bg-dark border border-gray-700 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Approval Rate Trend</h3>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-ellipsis-v"></i></button>
+          </div>
+          <div id="approval-rate-chart" style="height: 300px;"></div>
+        </div>
+
+        <div id="processing-chart-card" class="bg-dark border border-gray-700 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-white">Processing Time</h3>
+            <button class="text-gray-400 hover:text-primary transition-colors"><i class="fa-solid fa-ellipsis-v"></i></button>
+          </div>
+          <div id="processing-time-chart" style="height: 300px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.addEventListener('load', function() {
+        const darkBg = '#1F2937';
+        const primaryColor = '#FCD34D';
+        const textColor = '#D1D5DB';
+
+        try {
+          const revenueData = [{
+            x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            y: [65000, 72000, 68000, 78000, 85000, 82000, 89000, 95000, 92000, 98000, 105000, 110000],
+            type: 'scatter',
+            mode: 'lines',
+            fill: 'tozeroy',
+            line: { color: primaryColor, width: 3 },
+            fillcolor: 'rgba(252, 211, 77, 0.1)'
+          }];
+
+          const revenueLayout = {
+            margin: { t: 20, r: 20, b: 40, l: 60 },
+            plot_bgcolor: darkBg,
+            paper_bgcolor: darkBg,
+            font: { color: textColor, family: 'system-ui' },
+            xaxis: { gridcolor: '#374151', showgrid: true },
+            yaxis: { gridcolor: '#374151', showgrid: true, tickprefix: '$' },
+            showlegend: false
+          };
+
+          Plotly.newPlot('revenue-chart', revenueData, revenueLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+          const invoiceData = [{
+            values: [892, 355, 142, 58],
+            labels: ['Approved', 'Pending', 'Processing', 'Rejected'],
+            type: 'pie',
+            marker: {
+              colors: ['#10B981', '#FCD34D', '#3B82F6', '#EF4444']
+            },
+            textfont: { color: '#FFFFFF', size: 14 },
+            hole: 0.4
+          }];
+
+          const invoiceLayout = {
+            margin: { t: 20, r: 20, b: 20, l: 20 },
+            plot_bgcolor: darkBg,
+            paper_bgcolor: darkBg,
+            font: { color: textColor, family: 'system-ui' },
+            showlegend: true,
+            legend: { x: 0, y: -0.2, orientation: 'h' }
+          };
+
+          Plotly.newPlot('invoice-status-chart', invoiceData, invoiceLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+          const supplierData = [{
+            x: [145000, 132000, 128000, 115000, 98000],
+            y: ['Acme Corp', 'Global Tech', 'Enterprise Services', 'Summit Supply', 'Metro Logistics'],
+            type: 'bar',
+            orientation: 'h',
+            marker: { color: primaryColor }
+          }];
+
+          const supplierLayout = {
+            margin: { t: 20, r: 20, b: 40, l: 140 },
+            plot_bgcolor: darkBg,
+            paper_bgcolor: darkBg,
+            font: { color: textColor, family: 'system-ui' },
+            xaxis: { gridcolor: '#374151', showgrid: true, tickprefix: '$' },
+            yaxis: { gridcolor: '#374151', showgrid: false },
+            showlegend: false
+          };
+
+          Plotly.newPlot('supplier-chart', supplierData, supplierLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+          const paymentData = [
+            {
+              x: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+              y: [125000, 142000, 138000, 155000],
+              type: 'scatter',
+              mode: 'lines+markers',
+              name: 'Paid',
+              line: { color: '#10B981', width: 3 },
+              marker: { size: 8 }
+            },
+            {
+              x: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+              y: [85000, 92000, 88000, 95000],
+              type: 'scatter',
+              mode: 'lines+markers',
+              name: 'Due',
+              line: { color: primaryColor, width: 3 },
+              marker: { size: 8 }
+            }
+          ];
+
+          const paymentLayout = {
+            margin: { t: 20, r: 20, b: 40, l: 60 },
+            plot_bgcolor: darkBg,
+            paper_bgcolor: darkBg,
+            font: { color: textColor, family: 'system-ui' },
+            xaxis: { gridcolor: '#374151', showgrid: true },
+            yaxis: { gridcolor: '#374151', showgrid: true, tickprefix: '$' },
+            showlegend: true,
+            legend: { x: 0, y: 1.15, orientation: 'h' }
+          };
+
+          Plotly.newPlot('payment-timeline-chart', paymentData, paymentLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+          const categoryData = [{
+            values: [285000, 215000, 185000, 162000],
+            labels: ['Services', 'Software', 'Hardware', 'Consulting'],
+            type: 'pie',
+            marker: {
+              colors: ['#FCD34D', '#3B82F6', '#10B981', '#8B5CF6']
+            },
+            textfont: { color: '#FFFFFF', size: 12 }
+          }];
+
+          const categoryLayout = {
+            margin: { t: 20, r: 20, b: 20, l: 20 },
+            plot_bgcolor: darkBg,
+            paper_bgcolor: darkBg,
+            font: { color: textColor, family: 'system-ui' },
+            showlegend: true,
+            legend: { x: 0, y: -0.2, orientation: 'h' }
+          };
+
+          Plotly.newPlot('category-chart', categoryData, categoryLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+          const approvalData = [{
+            x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            y: [85, 87, 84, 89, 91, 88, 92, 94, 93, 95, 96, 97],
+            type: 'scatter',
+            mode: 'lines',
+            fill: 'tozeroy',
+            line: { color: '#10B981', width: 3 },
+            fillcolor: 'rgba(16, 185, 129, 0.1)'
+          }];
+
+          const approvalLayout = {
+            margin: { t: 20, r: 20, b: 40, l: 50 },
+            plot_bgcolor: darkBg,
+            paper_bgcolor: darkBg,
+            font: { color: textColor, family: 'system-ui' },
+            xaxis: { gridcolor: '#374151', showgrid: true },
+            yaxis: { gridcolor: '#374151', showgrid: true, ticksuffix: '%', range: [80, 100] },
+            showlegend: false
+          };
+
+          Plotly.newPlot('approval-rate-chart', approvalData, approvalLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+          const processingData = [{
+            x: ['0-24h', '24-48h', '48-72h', '72h+'],
+            y: [520, 385, 215, 127],
+            type: 'bar',
+            marker: { 
+              color: ['#10B981', '#FCD34D', '#F59E0B', '#EF4444']
+            }
+          }];
+
+          const processingLayout = {
+            margin: { t: 20, r: 20, b: 40, l: 50 },
+            plot_bgcolor: darkBg,
+            paper_bgcolor: darkBg,
+            font: { color: textColor, family: 'system-ui' },
+            xaxis: { gridcolor: '#374151', showgrid: false },
+            yaxis: { gridcolor: '#374151', showgrid: true },
+            showlegend: false
+          };
+
+          Plotly.newPlot('processing-time-chart', processingData, processingLayout, {responsive: true, displayModeBar: false, displaylogo: false});
+
+        } catch(e) {
+          console.error('Chart rendering error:', e);
+        }
+      });
+    </script>
+</body>
+</html>

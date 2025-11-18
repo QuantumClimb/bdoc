@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Bootstrap Icons */
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* Icon Glow Effect */
+.icon-glow {
+  filter: drop-shadow(0 0 8px rgba(251, 204, 95, 0.6));
+}
+
+/* Animations */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+
+:root {
+  --app-header-height: 72px;
+  --app-footer-height: 48px;
+  --app-bg: #f6f7fb;
+  --panel-radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--app-bg);
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Utility: screen minus header */
+.screen-minus-header {
+  height: calc(100vh - var(--app-header-height));
+}
+
+.screen-minus-header-footer {
+  height: calc(100vh - var(--app-header-height) - var(--app-footer-height));
+}
+
+/* Iframe container */
+.iframe-host {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.iframe-host iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* Loading state */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}

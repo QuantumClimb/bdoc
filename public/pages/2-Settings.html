@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#FCD34D',
+              dark: '#1F2937',
+              darker: '#111827'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1F2937;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #FCD34D;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #F59E0B;
+      }
+      .icon-glow {
+        transition: all 0.3s ease;
+      }
+      .icon-glow:hover {
+        color: #FCD34D;
+        filter: drop-shadow(0 0 8px rgba(252, 211, 77, 0.8));
+        transform: scale(1.1);
+      }
+      .header-glass {
+        background: rgba(31, 41, 55, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(252, 211, 77, 0.1);
+      }
+      .footer-glass {
+        background: rgba(31, 41, 55, 0.8);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(252, 211, 77, 0.1);
+      }
+      .settings-nav-item {
+        transition: all 0.3s ease;
+      }
+      .settings-nav-item.active {
+        background: rgba(252, 211, 77, 0.1);
+        border-left: 3px solid #FCD34D;
+        color: #FCD34D;
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 24px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #374151;
+        transition: 0.3s;
+        border-radius: 24px;
+      }
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+      input:checked + .toggle-slider {
+        background-color: #FCD34D;
+      }
+      input:checked + .toggle-slider:before {
+        transform: translateX(24px);
+      }
+    </style>
+</head>
+<body class="bg-darker min-h-screen flex flex-col">
+    <header id="header" class="header-glass fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-12">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                            <i class="bi bi-file-earmark-text text-darker text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-white tracking-tight">BDoc</span>
+                    </div>
+                    
+                    <nav class="hidden lg:flex items-center space-x-8">
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-speedometer2 text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Dashboard</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-file-earmark-text text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Document</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-arrow-clockwise text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Redo</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-arrow-counterclockwise text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Undo</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-download text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Download</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-upload text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Import</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                            <i class="bi bi-search text-xl icon-glow"></i>
+                            <span class="text-sm font-medium">Search</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-6">
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <i class="bi bi-box-arrow-right text-2xl icon-glow"></i>
+                    </button>
+                    <button class="text-primary transition-colors">
+                        <i class="bi bi-gear-fill text-2xl icon-glow"></i>
+                    </button>
+                    <button class="flex items-center space-x-2 bg-dark border border-gray-700 rounded-xl px-4 py-2 hover:border-primary transition-all">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Profile" class="w-8 h-8 rounded-lg">
+                        <span class="text-white text-sm font-medium">Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 pt-20 pb-16">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold text-white mb-2">Settings</h1>
+                <p class="text-gray-400">Manage your account, preferences, and system configurations</p>
+            </div>
+
+            <div class="grid grid-cols-12 gap-6">
+                <div id="settings-sidebar" class="col-span-12 lg:col-span-3">
+                    <div class="bg-dark rounded-xl border border-gray-700 overflow-hidden">
+                        <div class="p-4 border-b border-gray-700">
+                            <h3 class="text-white font-semibold text-sm uppercase tracking-wider">Navigation</h3>
+                        </div>
+                        <nav class="p-2">
+                            <button onclick="showSection('profile')" class="settings-nav-item active w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg">
+                                <i class="bi bi-person text-lg"></i>
+                                <span class="text-sm font-medium">Profile Settings</span>
+                            </button>
+                            <button onclick="showSection('account')" class="settings-nav-item w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg">
+                                <i class="bi bi-shield-lock text-lg"></i>
+                                <span class="text-sm font-medium">Account & Security</span>
+                            </button>
+                            <button onclick="showSection('preferences')" class="settings-nav-item w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg">
+                                <i class="bi bi-sliders text-lg"></i>
+                                <span class="text-sm font-medium">Preferences</span>
+                            </button>
+                            <button onclick="showSection('notifications')" class="settings-nav-item w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg">
+                                <i class="bi bi-bell text-lg"></i>
+                                <span class="text-sm font-medium">Notifications</span>
+                            </button>
+                            <button onclick="showSection('system')" class="settings-nav-item w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg">
+                                <i class="bi bi-gear text-lg"></i>
+                                <span class="text-sm font-medium">System Settings</span>
+                            </button>
+                            <button onclick="showSection('billing')" class="settings-nav-item w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg">
+                                <i class="bi bi-credit-card text-lg"></i>
+                                <span class="text-sm font-medium">Billing</span>
+                            </button>
+                            <button onclick="showSection('integrations')" class="settings-nav-item w-full flex items-center space-x-3 px-4 py-3 text-left text-gray-300 hover:bg-gray-800 rounded-lg">
+                                <i class="bi bi-plugin text-lg"></i>
+                                <span class="text-sm font-medium">Integrations</span>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <div id="settings-content" class="col-span-12 lg:col-span-9">
+                    <div id="profile-section" class="settings-section">
+                        <div class="bg-dark rounded-xl border border-gray-700 p-8 mb-6">
+                            <div class="flex items-start justify-between mb-6">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-white mb-2">Profile Settings</h2>
+                                    <p class="text-gray-400 text-sm">Update your personal information and profile picture</p>
+                                </div>
+                                <button class="bg-primary hover:bg-yellow-400 text-darker px-6 py-2 rounded-lg font-semibold transition-all">
+                                    Save Changes
+                                </button>
+                            </div>
+
+                            <div class="flex items-center space-x-6 mb-8 pb-8 border-b border-gray-700">
+                                <div class="relative">
+                                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Profile" class="w-24 h-24 rounded-2xl">
+                                    <button class="absolute bottom-0 right-0 bg-primary hover:bg-yellow-400 text-darker w-8 h-8 rounded-lg flex items-center justify-center transition-all">
+                                        <i class="bi bi-camera text-sm"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-semibold text-lg mb-1">Profile Picture</h3>
+                                    <p class="text-gray-400 text-sm mb-3">JPG, PNG or GIF. Max size 2MB</p>
+                                    <div class="flex space-x-3">
+                                        <button class="text-primary hover:text-yellow-400 text-sm font-medium transition-colors">Upload New</button>
+                                        <button class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-medium mb-2">First Name</label>
+                                    <input type="text" value="Admin" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-medium mb-2">Last Name</label>
+                                    <input type="text" value="User" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-medium mb-2">Email Address</label>
+                                    <input type="email" value="admin@bauratech.com" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-medium mb-2">Phone Number</label>
+                                    <input type="tel" value="+1 234 567 8900" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-medium mb-2">Job Title</label>
+                                    <input type="text" value="System Administrator" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-medium mb-2">Department</label>
+                                    <select class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                        <option>IT Department</option>
+                                        <option>Finance</option>
+                                        <option>Operations</option>
+                                        <option>Management</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-gray-300 text-sm font-medium mb-2">Bio</label>
+                                    <textarea rows="4" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors" placeholder="Tell us about yourself..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="account-section" class="settings-section hidden">
+                        <div class="bg-dark rounded-xl border border-gray-700 p-8 mb-6">
+                            <h2 class="text-2xl font-bold text-white mb-6">Account & Security</h2>
+                            
+                            <div class="space-y-6">
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Change Password</h3>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-gray-300 text-sm font-medium mb-2">Current Password</label>
+                                            <input type="password" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-300 text-sm font-medium mb-2">New Password</label>
+                                            <input type="password" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-300 text-sm font-medium mb-2">Confirm New Password</label>
+                                            <input type="password" class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                        </div>
+                                        <button class="bg-primary hover:bg-yellow-400 text-darker px-6 py-2 rounded-lg font-semibold transition-all">
+                                            Update Password
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Two-Factor Authentication</h3>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <p class="text-gray-300 text-sm mb-1">Enable two-factor authentication for enhanced security</p>
+                                            <p class="text-gray-500 text-xs">Use an authenticator app to generate verification codes</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Active Sessions</h3>
+                                    <div class="space-y-3">
+                                        <div class="bg-darker rounded-lg p-4 flex items-center justify-between">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                                                    <i class="bi bi-laptop text-white text-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-medium text-sm">Windows - Chrome</p>
+                                                    <p class="text-gray-400 text-xs">New York, USA - Current Session</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-green-400 text-xs font-medium">Active</span>
+                                        </div>
+                                        <div class="bg-darker rounded-lg p-4 flex items-center justify-between">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
+                                                    <i class="bi bi-phone text-white text-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-white font-medium text-sm">iPhone - Safari</p>
+                                                    <p class="text-gray-400 text-xs">New York, USA - 2 days ago</p>
+                                                </div>
+                                            </div>
+                                            <button class="text-red-400 hover:text-red-300 text-xs font-medium transition-colors">Revoke</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-white font-semibold mb-4">Danger Zone</h3>
+                                    <div class="bg-red-900 bg-opacity-20 border border-red-500 rounded-lg p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <p class="text-white font-medium mb-1">Delete Account</p>
+                                                <p class="text-gray-400 text-sm">Permanently delete your account and all associated data</p>
+                                            </div>
+                                            <button class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                                                Delete Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="preferences-section" class="settings-section hidden">
+                        <div class="bg-dark rounded-xl border border-gray-700 p-8 mb-6">
+                            <h2 class="text-2xl font-bold text-white mb-6">Preferences</h2>
+                            
+                            <div class="space-y-6">
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Display Settings</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Dark Mode</p>
+                                                <p class="text-gray-500 text-xs">Use dark theme across the application</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-300 text-sm font-medium mb-2">Language</label>
+                                            <select class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                                <option>English (US)</option>
+                                                <option>English (UK)</option>
+                                                <option>Spanish</option>
+                                                <option>French</option>
+                                                <option>German</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-300 text-sm font-medium mb-2">Timezone</label>
+                                            <select class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                                <option>UTC-05:00 Eastern Time</option>
+                                                <option>UTC-08:00 Pacific Time</option>
+                                                <option>UTC+00:00 London</option>
+                                                <option>UTC+01:00 Paris</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Document Settings</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Auto-save Documents</p>
+                                                <p class="text-gray-500 text-xs">Automatically save changes every 5 minutes</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-300 text-sm font-medium mb-2">Default Document View</label>
+                                            <select class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                                <option>Grid View</option>
+                                                <option>List View</option>
+                                                <option>Table View</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-white font-semibold mb-4">Privacy Settings</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Profile Visibility</p>
+                                                <p class="text-gray-500 text-xs">Allow others to view your profile</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Activity Status</p>
+                                                <p class="text-gray-500 text-xs">Show when you're online</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="notifications-section" class="settings-section hidden">
+                        <div class="bg-dark rounded-xl border border-gray-700 p-8 mb-6">
+                            <h2 class="text-2xl font-bold text-white mb-6">Notification Settings</h2>
+                            
+                            <div class="space-y-6">
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Email Notifications</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Document Updates</p>
+                                                <p class="text-gray-500 text-xs">Receive emails when documents are updated</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">System Alerts</p>
+                                                <p class="text-gray-500 text-xs">Important system notifications and updates</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Weekly Summary</p>
+                                                <p class="text-gray-500 text-xs">Weekly activity summary report</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Push Notifications</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Desktop Notifications</p>
+                                                <p class="text-gray-500 text-xs">Show desktop notifications for important events</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Mobile Notifications</p>
+                                                <p class="text-gray-500 text-xs">Receive notifications on your mobile device</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-300 text-sm mb-1">Sound Alerts</p>
+                                                <p class="text-gray-500 text-xs">Play sound for notifications</p>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-white font-semibold mb-4">Notification Frequency</h3>
+                                    <div>
+                                        <label class="block text-gray-300 text-sm font-medium mb-2">Email Digest Frequency</label>
+                                        <select class="w-full bg-darker border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors">
+                                            <option>Real-time</option>
+                                            <option>Daily Digest</option>
+                                            <option>Weekly Digest</option>
+                                            <option>Never</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="system-section" class="settings-section hidden">
+                        <div class="bg-dark rounded-xl border border-gray-700 p-8 mb-6">
+                            <h2 class="text-2xl font-bold text-white mb-6">System Settings</h2>
+                            <div class="space-y-6">
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">System Information</h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p class="text-gray-400 text-xs mb-1">Version</p>
+                                            <p class="text-white text-sm font-medium">BDoc v2.4.1</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-400 text-xs mb-1">Last Updated</p>
+                                            <p class="text-white text-sm font-medium">Dec 15, 2024</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-400 text-xs mb-1">License Type</p>
+                                            <p class="text-white text-sm font-medium">Enterprise</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-400 text-xs mb-1">Storage Used</p>
+                                            <p class="text-white text-sm font-medium">45.2 GB / 100 GB</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-semibold mb-4">Maintenance</h3>
+                                    <div class="space-y-3">
+                                        <button class="w-full bg-darker hover:bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-left text-white transition-all">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm font-medium">Clear Cache</span>
+                                                <i class="bi bi-trash text-primary"></i>
+                                            </div>
+                                        </button>
+                                        <button class="w-full bg-darker hover:bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-left text-white transition-all">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm font-medium">Export Data</span>
+                                                <i class="bi bi-download text-primary"></i>
+                                            </div>
+                                        </button>
+                                        <button class="w-full bg-darker hover:bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-left text-white transition-all">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm font-medium">Check for Updates</span>
+                                                <i class="bi bi-arrow-repeat text-primary"></i>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="billing-section" class="settings-section hidden">
+                        <div class="bg-dark rounded-xl border border-gray-700 p-8 mb-6">
+                            <h2 class="text-2xl font-bold text-white mb-6">Billing & Subscription</h2>
+                            <div class="space-y-6">
+                                <div class="pb-6 border-b border-gray-700">
+                                    <h3 class="text-white font-semibold mb-4">Current Plan</h3>
+                                    <div class="bg-darker rounded-lg p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div>
+                                                <p class="text-primary text-lg font-bold">Enterprise Plan</p>
+                                                <p class="text-gray-400 text-sm">Unlimited users and storage</p>
+                                            </div>
+                                            <p class="text-white text-2xl font-bold">$299<span class="text-gray-400 text-sm font-normal">/month</span></p>
+                                        </div>
+                                        <button class="bg-primary hover:bg-yellow-400 text-darker px-6 py-2 rounded-lg font-semibold transition-all">
+                                            Upgrade Plan
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-semibold mb-4">Payment Method</h3>
+                                    <div class="bg-darker rounded-lg p-4 flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                                                <i class="bi bi-credit-card text-darker text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-white font-medium">•••• •••• •••• 4242</p>
+                                                <p class="text-gray-400 text-sm">Expires 12/2025</p>
+                                            </div>
+                                        </div>
+                                        <button class="text-primary hover:text-yellow-400 text-sm font-medium transition-colors">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="integrations-section" class="settings-section hidden">
+                        <div class="bg-dark rounded-xl border border-gray-700 p-8 mb-6">
+                            <h2 class="text-2xl font-bold text-white mb-6">Integrations</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-darker rounded-lg p-4 flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                                            <i class="bi bi-dropbox text-white text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-medium">Dropbox</p>
+                                            <p class="text-gray-400 text-sm">Connected</p>
+                                        </div>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="bg-darker rounded-lg p-4 flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                                            <i class="bi bi-google text-white text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-medium">Google Drive</p>
+                                            <p class="text-gray-400 text-sm">Not Connected</p>
+                                        </div>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer" class="footer-glass mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="bi bi-file-earmark-text text-darker text-lg"></i>
+                    </div>
+                    <span class="text-white font-semibold">BDoc</span>
+                </div>
+                <div class="text-center md:text-left mb-4 md:mb-0">
+                    <p class="text-gray-400 text-sm">© 2024 BAuraTech. All rights reserved.</p>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition-colors text-sm">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function showSection(sectionName) {
+            const sections = document.querySelectorAll('.settings-section');
+            sections.forEach(section => section.classList.add('hidden'));
+            
+            const navItems = document.querySelectorAll('.settings-nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            event.target.closest('.settings-nav-item').classList.add('active');
+        }
+    </script>
+</body>
+</html>

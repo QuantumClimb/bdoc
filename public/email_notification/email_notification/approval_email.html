@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Approval Required</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 0 0 10px 10px;
+        }
+        .invoice-details {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-edit {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 12px;
+        }
+        .changes-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .audit-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+        /* 🔥 NEW: Changes table styles */
+        .changes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .changes-table tr {
+            border-bottom: 1px solid #e9ecef;
+        }
+        .changes-table td {
+            padding: 8px;
+            vertical-align: top;
+        }
+        .change-field {
+            font-weight: 600;
+            width: 30%;
+            color: #495057;
+        }
+        .change-arrow {
+            text-align: center;
+            width: 10%;
+            color: #6c757d;
+            font-weight: bold;
+        }
+        .change-new {
+            width: 60%;
+            color: #28a745;
+            font-weight: 500;
+        }
+        .changes-group {
+            margin-bottom: 20px;
+        }
+        .changes-group h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+        .line-change {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📋 Invoice Approval Required</h1>
+        <p>Your action is needed for the following invoice</p>
+    </div>
+    
+    <div class="content">
+        <div class="invoice-details">
+            <h2>Invoice Details</h2>
+            <div class="detail-row">
+                <span class="detail-label">Invoice Number:</span>
+                <span class="detail-value">{{ invoice_number }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Invoice Amount:</span>
+                <span class="detail-value">₹{{ formatted_amount }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Audit ID:</span>
+                <span class="detail-value">{{ audit_id }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Submission Date:</span>
+                <span class="detail-value">{{ submission_date }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Approver Level:</span>
+                <span class="detail-value">{{ approver_level }}</span>
+            </div>
+        </div>
+
+        <!-- 🔥 ENHANCED: Changes section with dynamic content -->
+        {% if changes and (changes.header_changes or changes.line_changes) %}
+        <div class="changes-section">
+            <h3>📊 CHANGES SUMMARY</h3>
+            
+            {% if changes.header_changes %}
+            <div class="changes-group">
+                <h4>📋 Header Changes</h4>
+                <table class="changes-table">
+                    {% for field, change_desc in changes.header_changes.items() %}
+                    <tr>
+                        <td class="change-field">{{ field|replace('_', ' ')|title }}</td>
+                        <td class="change-arrow">→</td>
+                        <td class="change-new">{{ change_desc }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            {% endif %}
+            
+            {% if changes.line_changes %}
+            <div class="changes-group">
+                <h4>📝 Line Item Changes</h4>
+                {% for line_num, line_data in changes.line_changes.items() %}
+                <div class="line-change">
+                    <strong>Line {{ line_num }}:</strong>
+                    <table class="changes-table">
+                        {% for field, change_desc in line_data.items() %}
+                        <tr>
+                            <td class="change-field">{{ field|replace('_', ' ')|title }}</td>
+                            <td class="change-arrow">→</td>
+                            <td class="change-new">{{ change_desc }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% elif changes and changes != "No specific changes mentioned" %}
+        <!-- Fallback for simple changes text -->
+        <div class="changes-section">
+            <h3>📝 Changes / Notes</h3>
+            <p>{{ changes }}</p>
+        </div>
+        {% endif %}
+
+        <div class="audit-info">
+            <h3>🔍 Audit Information</h3>
+            <p><strong>Requested By:</strong> {{ requested_by }}</p>
+            <p><strong>Approver:</strong> {{ approver_name }} ({{ approver_email }})</p>
+        </div>
+
+        <div class="action-buttons">
+            <p><strong>Please take action by clicking one of the buttons below:</strong></p>
+            
+            <a href="{{ approve_url }}" class="btn btn-approve">✅ Approve</a>
+            <a href="{{ reject_url }}" class="btn btn-reject">❌ Reject</a>
+            <a href="{{ request_edit_url }}" class="btn btn-edit">✏️ Request Edit</a>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated message from the Invoice Approval System.</p>
+            <p>If you believe you received this email in error, please contact the system administrator.</p>
+            <p><small>Audit ID: {{ audit_id }} | Invoice: {{ invoice_number }}</small></p>
+        </div>
+    </div>
+</body>
+</html>
