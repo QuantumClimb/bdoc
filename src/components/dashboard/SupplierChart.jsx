@@ -34,8 +34,8 @@ export function SupplierChart({ data }) {
 
   const layout = {
     ...chartConfig.layout,
-    paper_bgcolor: isDark ? '#111827' : '#FFFFFF',
-    plot_bgcolor: isDark ? '#2B363C' : '#F9FAFB',
+    paper_bgcolor: isDark ? '#171f2d' : '#FFFFFF',
+    plot_bgcolor: isDark ? '#171f2d' : '#F9FAFB',
     title: {
       text: 'Top Suppliers',
       font: { size: 16, color: isDark ? '#E5E7EB' : '#111827', family: 'Raleway' },

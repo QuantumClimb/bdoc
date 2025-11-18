@@ -108,21 +108,21 @@ export function SplashScreen({ onComplete }) {
         .logo-container {
           animation: logoEntry 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
           opacity: 0;
-          transform: scale(0.3) rotate(-180deg);
+          transform: scale(0.3);
         }
         
         @keyframes logoEntry {
           0% {
             opacity: 0;
-            transform: scale(0.3) rotate(-180deg);
+            transform: scale(0.3);
           }
           70% {
             opacity: 1;
-            transform: scale(1.1) rotate(10deg);
+            transform: scale(1.1);
           }
           100% {
             opacity: 1;
-            transform: scale(1) rotate(0deg);
+            transform: scale(1);
           }
         }
         
