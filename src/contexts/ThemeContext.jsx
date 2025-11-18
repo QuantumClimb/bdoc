@@ -20,8 +20,14 @@ export const ThemeProvider = ({ children }) => {
     const saved = localStorage.getItem('bdoc_theme');
     if (!saved) {
       localStorage.setItem('bdoc_theme', 'dark');
+      document.documentElement.classList.add('dark'); // Apply dark class immediately
+      return true; // Default to dark mode
     }
-    return saved ? saved === 'dark' : true;
+    const isDarkMode = saved === 'dark';
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    }
+    return isDarkMode;
   });
 
   useEffect(() => {
